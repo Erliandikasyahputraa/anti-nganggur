@@ -173,7 +173,7 @@ export function ApplicationDetailLayout({
       </div>
 
       {/* Mobile & Tablet Bottom Tab Bar (< 1280px) */}
-      <div className="xl:hidden shrink-0 border-t border-[var(--modal-divider)] bg-[var(--modal-header)] py-1 px-1.5">
+      <div className="xl:hidden shrink-0 border-t border-[var(--modal-divider)] bg-[var(--modal-header)] pt-1.5 pb-[max(0.375rem,env(safe-area-inset-bottom))] px-2 shadow-xs">
         <TabNavigation
           activeTab={activeTab}
           onTabChange={onTabChange}

@@ -3,6 +3,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import userEvent from '@testing-library/user-event'
 import { ApplicationDetail } from '../ApplicationDetail'
 import { TabNavigation } from '../ApplicationDetail/components/LeftPanel/TabNavigation'
+import { ApplicationDetailLayout } from '../ApplicationDetail/components/ApplicationDetailLayout'
 import type { Application } from '@/lib/types/database.types'
 import type { ApplicationFormData } from '@/lib/schemas/application.schema'
 
@@ -826,6 +827,75 @@ describe('ApplicationDetail', () => {
       const companyTabButtons = screen.getAllByRole('tab', { name: /company/i })
       // At least one Company tab button should be present
       expect(companyTabButtons.length).toBeGreaterThan(0)
+    })
+
+    it('bottom-bar TabNavigation implements refined active indicator, accessibility, and label robustness', () => {
+      const { container } = render(
+        <TabNavigation activeTab="overview" onTabChange={() => {}} variant="bottom-bar" />
+      )
+
+      const tabs = screen.getAllByRole('tab')
+      expect(tabs).toHaveLength(4)
+
+      // Active tab (overview) assertions
+      const activeTab = tabs[0]
+      expect(activeTab).toHaveAttribute('aria-selected', 'true')
+      expect(activeTab).toHaveClass('rounded-xl')
+      expect(activeTab).toHaveClass('text-amber-700')
+      expect(activeTab).toHaveClass('dark:text-amber-400')
+
+      // Active indicator bar
+      const indicator = activeTab.querySelector('span[aria-hidden="true"]')
+      expect(indicator).toBeInTheDocument()
+      expect(indicator).toHaveClass('bg-amber-700')
+      expect(indicator).toHaveClass('dark:bg-amber-400')
+      expect(indicator).toHaveClass('h-[2px]')
+
+      // Inactive tab (company) assertions
+      const inactiveTab = tabs[1]
+      expect(inactiveTab).toHaveAttribute('aria-selected', 'false')
+      const inactiveLabel = inactiveTab.querySelector('span:not([aria-hidden="true"])')
+      expect(inactiveLabel).toHaveClass('font-medium')
+
+      // Label robustness across all tabs
+      const labels = container.querySelectorAll('button > span:not([aria-hidden="true"])')
+      labels.forEach(label => {
+        expect(label).toHaveClass('truncate')
+        expect(label).toHaveClass('whitespace-nowrap')
+        expect(label).toHaveClass('max-w-full')
+      })
+
+      // SVG Icon accessibility
+      const icons = container.querySelectorAll('svg')
+      expect(icons.length).toBe(4)
+      icons.forEach(icon => {
+        expect(icon).toHaveAttribute('aria-hidden', 'true')
+      })
+    })
+
+    it('ApplicationDetailLayout bottom-bar container includes safe-area padding and shadow', () => {
+      const application = createMockApplication()
+      const { container } = render(
+        <ApplicationDetailLayout
+          application={application}
+          customColumns={[]}
+          onUpdate={mockOnUpdate}
+          onDelete={mockOnDelete}
+          onClose={mockOnClose}
+          isEditMode={false}
+          activeTab="overview"
+          onTabChange={() => {}}
+          onEdit={() => {}}
+          onDeleteClick={() => {}}
+        />
+      )
+
+      const bottomBarContainer = container.querySelector('div.xl\\:hidden.shrink-0')
+      expect(bottomBarContainer).toBeInTheDocument()
+      expect(bottomBarContainer).toHaveClass('pb-[max(0.375rem,env(safe-area-inset-bottom))]')
+      expect(bottomBarContainer).toHaveClass('pt-1.5')
+      expect(bottomBarContainer).toHaveClass('px-2')
+      expect(bottomBarContainer).toHaveClass('shadow-xs')
     })
   })
 })

@@ -84,25 +84,32 @@ export function TabNavigation({
               disabled={disabled}
               onClick={() => handleTabClick(tab.id)}
               className={cn(
-                'flex flex-col items-center justify-center py-1.5 px-1 rounded-lg transition-all duration-150',
+                'relative flex flex-col items-center justify-center py-1.5 px-1 rounded-xl transition-all duration-150',
                 'focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:ring-offset-1',
                 'min-h-[48px]',
                 isActive
-                  ? 'text-amber-600 dark:text-amber-400 bg-amber-500/10 dark:bg-amber-500/15'
+                  ? 'text-amber-700 dark:text-amber-400 bg-amber-500/10 dark:bg-amber-500/15'
                   : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-recessed)]',
                 disabled && 'opacity-50 cursor-not-allowed'
               )}
             >
+              {isActive && (
+                <span
+                  className="absolute top-1 w-6 h-[2px] rounded-full bg-amber-700 dark:bg-amber-400"
+                  aria-hidden="true"
+                />
+              )}
               <Icon
                 className={cn(
                   'w-[18px] h-[18px] flex-shrink-0 transition-colors mb-0.5',
-                  isActive ? 'text-amber-600 dark:text-amber-400' : 'text-[var(--text-muted)]'
+                  isActive ? 'text-amber-700 dark:text-amber-400' : 'text-[var(--text-muted)]'
                 )}
+                aria-hidden="true"
               />
               <span
                 className={cn(
-                  'text-[11px] sm:text-xs font-medium leading-none',
-                  isActive ? 'text-amber-600 dark:text-amber-400' : ''
+                  'text-[11px] sm:text-xs leading-none truncate whitespace-nowrap max-w-full',
+                  isActive ? 'font-semibold text-amber-700 dark:text-amber-400' : 'font-medium'
                 )}
               >
                 {tab.label}
