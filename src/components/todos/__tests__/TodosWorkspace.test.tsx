@@ -6,6 +6,22 @@ import type { ApplicationOption } from '@/lib/api/applications'
 import type { User } from '@supabase/supabase-js'
 import { format } from 'date-fns'
 
+// Mock server actions
+vi.mock('@/app/todos/actions', () => ({
+  createTaskAction: vi.fn(),
+  updateTaskAction: vi.fn(),
+  toggleTaskStatusAction: vi.fn(),
+  deleteTaskAction: vi.fn(),
+}))
+
+// Mock sonner toast
+vi.mock('sonner', () => ({
+  toast: {
+    success: vi.fn(),
+    error: vi.fn(),
+  },
+}))
+
 describe('TodosWorkspace Component', () => {
   const mockUser = {
     id: 'user-abc-123',
@@ -65,7 +81,7 @@ describe('TodosWorkspace Component', () => {
 
     // Header
     expect(screen.getByRole('heading', { level: 1, name: 'To-Do' })).toBeInTheDocument()
-    expect(screen.getByTestId('add-task-button-shell')).toBeInTheDocument()
+    expect(screen.getByTestId('add-task-button')).toBeInTheDocument()
 
     // Summary Bar
     expect(screen.getByTestId('task-summary-bar')).toBeInTheDocument()
@@ -80,7 +96,7 @@ describe('TodosWorkspace Component', () => {
     expect(screen.getByTestId('filter-tab-completed')).toBeInTheDocument()
   })
 
-  it('renders initial task data and does not show fake/mock tasks', () => {
+  it('renders task list items and displays task details', () => {
     render(
       <TodosWorkspace user={mockUser} initialTasks={mockTasks} applicationOptions={mockOptions} />
     )
@@ -103,7 +119,7 @@ describe('TodosWorkspace Component', () => {
     expect(screen.getByTestId('summary-pending-count')).toHaveTextContent('0')
     expect(screen.getByTestId('summary-today-count')).toHaveTextContent('0')
     expect(screen.getByTestId('summary-completed-count')).toHaveTextContent('0')
-    expect(screen.queryByTestId('task-initial-list')).not.toBeInTheDocument()
+    expect(screen.queryByTestId('task-list')).not.toBeInTheDocument()
   })
 
   it('renders error banner when initialError is present and supports reload', () => {

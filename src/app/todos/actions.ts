@@ -2,14 +2,13 @@
 
 import { createClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
+import { z } from 'zod'
 import { getNormalizedErrorMessage } from '@/lib/utils/error-handler'
-import {
-  createTaskSchema,
-  updateTaskSchema,
-  type CreateTaskInput,
-  type UpdateTaskInput,
-} from '@/lib/schemas/task.schema'
+import { createTaskSchema, updateTaskSchema } from '@/lib/schemas/task.schema'
 import type { TaskStatus, TaskWithApplication } from '@/lib/types/database.types'
+
+export type CreateTaskActionInput = z.input<typeof createTaskSchema>
+export type UpdateTaskActionInput = z.input<typeof updateTaskSchema>
 import {
   getTasks,
   getTaskById,
@@ -31,7 +30,9 @@ async function getAuthenticatedUser() {
   } = await supabase.auth.getUser()
 
   if (authError || !user) {
-    throw new Error('Sesi Anda telah berakhir. Silakan masuk kembali.')
+    const err = new Error('Unauthorized')
+    err.name = 'AuthSessionMissingError'
+    throw err
   }
 
   return { supabase, user }
@@ -70,7 +71,7 @@ export async function getTaskByIdAction(taskId: string): Promise<TaskWithApplica
 /**
  * Create a new task with validation and cache revalidation
  */
-export async function createTaskAction(input: CreateTaskInput): Promise<TaskWithApplication> {
+export async function createTaskAction(input: CreateTaskActionInput): Promise<TaskWithApplication> {
   try {
     const validatedData = createTaskSchema.parse(input)
     const { supabase, user } = await getAuthenticatedUser()
@@ -97,7 +98,7 @@ export async function createTaskAction(input: CreateTaskInput): Promise<TaskWith
  */
 export async function updateTaskAction(
   taskId: string,
-  input: UpdateTaskInput
+  input: UpdateTaskActionInput
 ): Promise<TaskWithApplication> {
   try {
     const validatedData = updateTaskSchema.parse(input)

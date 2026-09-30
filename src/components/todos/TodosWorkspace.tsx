@@ -2,22 +2,24 @@
 
 import * as React from 'react'
 import type { User } from '@supabase/supabase-js'
-import type { TaskWithApplication, TaskPriority } from '@/lib/types/database.types'
+import type { TaskWithApplication, TaskStatus } from '@/lib/types/database.types'
 import type { ApplicationOption } from '@/lib/api/applications'
+import type { CreateTaskInput, UpdateTaskInput } from '@/lib/schemas/task.schema'
 import { TaskSummaryBar } from './TaskSummaryBar'
+import { TaskFilterToolbar, type TaskFilterType } from './TaskFilterToolbar'
+import { TaskList } from './TaskList'
+import { TaskFormModal } from './TaskFormModal'
+import { TaskDeleteDialog } from './TaskDeleteDialog'
 import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Card, CardContent } from '@/components/ui/card'
-import {
-  Plus,
-  AlertCircle,
-  RotateCcw,
-  ListTodo,
-  Calendar,
-  Building2,
-  CheckCircle2,
-} from 'lucide-react'
+import { Plus, AlertCircle, RotateCcw } from 'lucide-react'
 import { format } from 'date-fns'
+import { toast } from 'sonner'
+import {
+  createTaskAction,
+  updateTaskAction,
+  toggleTaskStatusAction,
+  deleteTaskAction,
+} from '@/app/todos/actions'
 
 export interface TodosWorkspaceProps {
   user: User
@@ -26,24 +28,38 @@ export interface TodosWorkspaceProps {
   initialError?: string | null
 }
 
-export type TaskFilterType = 'all' | 'today' | 'upcoming' | 'completed'
-
 export function TodosWorkspace({
   user,
   initialTasks,
   applicationOptions,
   initialError,
 }: TodosWorkspaceProps) {
+  const [tasks, setTasks] = React.useState<TaskWithApplication[]>(initialTasks)
   const [activeFilter, setActiveFilter] = React.useState<TaskFilterType>('all')
 
-  // Derive counts for filter tabs using local date semantics
+  // Modal and Dialog states
+  const [isFormModalOpen, setIsFormModalOpen] = React.useState(false)
+  const [editingTask, setEditingTask] = React.useState<TaskWithApplication | null>(null)
+  const [deletingTask, setDeletingTask] = React.useState<TaskWithApplication | null>(null)
+
+  // Loading states
+  const [isSubmittingForm, setIsSubmittingForm] = React.useState(false)
+  const [isDeleting, setIsDeleting] = React.useState(false)
+  const [mutatingTaskIds, setMutatingTaskIds] = React.useState<Set<string>>(new Set())
+
+  // Keep tasks synced if initialTasks prop updates (e.g. server revalidation)
+  React.useEffect(() => {
+    setTasks(initialTasks)
+  }, [initialTasks])
+
+  // Derive counts for filter toolbar and summary bar using local calendar date semantics
   const filterCounts = React.useMemo(() => {
     const todayStr = format(new Date(), 'yyyy-MM-dd')
     let todayCount = 0
     let upcomingCount = 0
     let completedCount = 0
 
-    for (const task of initialTasks) {
+    for (const task of tasks) {
       if (task.status === 'completed') {
         completedCount++
       } else if (task.status === 'pending') {
@@ -56,29 +72,132 @@ export function TodosWorkspace({
     }
 
     return {
-      all: initialTasks.length,
+      all: tasks.length,
       today: todayCount,
       upcoming: upcomingCount,
       completed: completedCount,
     }
-  }, [initialTasks])
+  }, [tasks])
 
-  const filterTabs: Array<{ id: TaskFilterType; label: string; count: number }> = [
-    { id: 'all', label: 'Semua', count: filterCounts.all },
-    { id: 'today', label: 'Hari Ini', count: filterCounts.today },
-    { id: 'upcoming', label: 'Mendatang', count: filterCounts.upcoming },
-    { id: 'completed', label: 'Selesai', count: filterCounts.completed },
-  ]
+  // ==========================================
+  // 1. OPTIMISTIC COMPLETION TOGGLE + ROLLBACK
+  // ==========================================
+  const handleToggleStatus = async (task: TaskWithApplication) => {
+    const previousStatus = task.status
+    const previousCompletedAt = task.completed_at
+    const nextStatus: TaskStatus = previousStatus === 'pending' ? 'completed' : 'pending'
+    const optimisticCompletedAt = nextStatus === 'completed' ? new Date().toISOString() : null
 
-  const getPriorityBadgeVariant = (priority: TaskPriority) => {
-    switch (priority) {
-      case 'high':
-        return 'glass-error'
-      case 'medium':
-        return 'glass-warning'
-      case 'low':
-      default:
-        return 'glass'
+    // Track mutating task ID
+    setMutatingTaskIds(prev => new Set(prev).add(task.id))
+
+    // Step 1: Optimistic UI update
+    setTasks(prev =>
+      prev.map(t =>
+        t.id === task.id ? { ...t, status: nextStatus, completed_at: optimisticCompletedAt } : t
+      )
+    )
+
+    try {
+      // Step 2: Call server action
+      const updatedTask = await toggleTaskStatusAction(task.id, previousStatus)
+
+      // Step 3: Success -> retain authoritative state
+      setTasks(prev => prev.map(t => (t.id === task.id ? updatedTask : t)))
+      toast.success(
+        nextStatus === 'completed' ? 'Tugas ditandai selesai.' : 'Tugas dikembalikan ke pending.'
+      )
+    } catch (error) {
+      // Step 4: Failure -> Rollback to previous state
+      setTasks(prev =>
+        prev.map(t =>
+          t.id === task.id ? { ...t, status: previousStatus, completed_at: previousCompletedAt } : t
+        )
+      )
+
+      // Step 5: Show controlled normalized error
+      const message =
+        error instanceof Error
+          ? error.message
+          : 'Gagal memperbarui status tugas. Silakan coba lagi.'
+      toast.error(message)
+    } finally {
+      setMutatingTaskIds(prev => {
+        const next = new Set(prev)
+        next.delete(task.id)
+        return next
+      })
+    }
+  }
+
+  // ==========================================
+  // 2. CREATE TASK HANDLER
+  // ==========================================
+  const handleOpenCreateModal = () => {
+    setEditingTask(null)
+    setIsFormModalOpen(true)
+  }
+
+  const handleFormSubmit = async (inputData: CreateTaskInput | UpdateTaskInput) => {
+    setIsSubmittingForm(true)
+    try {
+      if (editingTask) {
+        // Update existing task
+        const updatedTask = await updateTaskAction(editingTask.id, inputData)
+        setTasks(prev => prev.map(t => (t.id === editingTask.id ? updatedTask : t)))
+        toast.success('Tugas berhasil diperbarui.')
+        setEditingTask(null)
+      } else {
+        // Create new task
+        const newTask = await createTaskAction(inputData as CreateTaskInput)
+        setTasks(prev => [newTask, ...prev])
+        toast.success('Tugas berhasil dibuat.')
+      }
+      setIsFormModalOpen(false)
+    } catch (error) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : editingTask
+            ? 'Gagal memperbarui tugas.'
+            : 'Gagal membuat tugas baru.'
+      toast.error(message)
+      throw error // rethrow to keep modal responsive to errors
+    } finally {
+      setIsSubmittingForm(false)
+    }
+  }
+
+  // ==========================================
+  // 3. EDIT TASK HANDLER
+  // ==========================================
+  const handleEditTask = (task: TaskWithApplication) => {
+    setEditingTask(task)
+    setIsFormModalOpen(true)
+  }
+
+  // ==========================================
+  // 4. DELETE TASK HANDLER
+  // ==========================================
+  const handleDeleteClick = (task: TaskWithApplication) => {
+    setDeletingTask(task)
+  }
+
+  const handleConfirmDelete = async () => {
+    if (!deletingTask) return
+
+    setIsDeleting(true)
+    try {
+      await deleteTaskAction(deletingTask.id)
+      setTasks(prev => prev.filter(t => t.id !== deletingTask.id))
+      toast.success('Tugas berhasil dihapus.')
+      setDeletingTask(null)
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : 'Gagal menghapus tugas. Silakan coba lagi.'
+      toast.error(message)
+    } finally {
+      setIsDeleting(false)
     }
   }
 
@@ -101,10 +220,9 @@ export function TodosWorkspace({
         <div className="flex items-center gap-3">
           <Button
             type="button"
+            onClick={handleOpenCreateModal}
             className="w-full sm:w-auto min-h-[44px] touch-manipulation gap-2 shadow-xs"
-            disabled
-            title="Formulir tambah tugas akan tersedia pada pembaruan berikutnya"
-            data-testid="add-task-button-shell"
+            data-testid="add-task-button"
           >
             <Plus className="h-4 w-4" />
             <span>Tambah Tugas</span>
@@ -137,125 +255,47 @@ export function TodosWorkspace({
       )}
 
       {/* 3. Task Summary Bar */}
-      <TaskSummaryBar tasks={initialTasks} />
+      <TaskSummaryBar tasks={tasks} />
 
-      {/* 4. Filter Toolbar Shell */}
-      <div className="flex items-center gap-1.5 sm:gap-2 overflow-x-auto pb-1 scrollbar-none">
-        {filterTabs.map(tab => {
-          const isActive = activeFilter === tab.id
-          return (
-            <button
-              key={tab.id}
-              type="button"
-              onClick={() => setActiveFilter(tab.id)}
-              className={`px-3 py-2 rounded-lg text-xs sm:text-sm font-medium transition-colors shrink-0 flex items-center gap-1.5 min-h-[40px] touch-manipulation ${
-                isActive
-                  ? 'bg-primary text-primary-foreground shadow-xs'
-                  : 'bg-[var(--surface-card)] text-label-secondary hover:text-label-primary border border-[var(--border-default)]'
-              }`}
-              data-testid={`filter-tab-${tab.id}`}
-            >
-              <span>{tab.label}</span>
-              <span
-                className={`text-[11px] px-1.5 py-0.2 rounded-full font-semibold ${
-                  isActive
-                    ? 'bg-primary-foreground/20 text-primary-foreground'
-                    : 'bg-muted text-label-tertiary'
-                }`}
-              >
-                {tab.count}
-              </span>
-            </button>
-          )
-        })}
-      </div>
+      {/* 4. Filter Toolbar Component */}
+      <TaskFilterToolbar
+        activeFilter={activeFilter}
+        onFilterChange={setActiveFilter}
+        counts={filterCounts}
+      />
 
-      {/* 5. Content Area */}
-      <div className="space-y-3" data-testid="task-content-area">
-        {initialTasks.length === 0 ? (
-          /* Empty Task State */
-          <Card className="bg-[var(--surface-card)] border border-[var(--border-default)] shadow-xs">
-            <CardContent className="p-8 sm:p-12 text-center space-y-3">
-              <div className="h-12 w-12 rounded-full bg-muted flex items-center justify-center mx-auto text-label-tertiary">
-                <ListTodo className="h-6 w-6" />
-              </div>
-              <div className="space-y-1 max-w-sm mx-auto">
-                <h3
-                  className="text-base font-semibold text-label-primary"
-                  data-testid="empty-tasks-title"
-                >
-                  Belum Ada Tugas
-                </h3>
-                <p className="text-xs sm:text-sm text-label-secondary">
-                  Mulai lacak jadwal interview, persiapan teknis, atau follow-up lamaran Anda.
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-        ) : (
-          /* Initial Task Data Shell (Pre-TaskList phase) */
-          <div className="space-y-2" data-testid="task-initial-list">
-            {initialTasks.map(task => (
-              <Card
-                key={task.id}
-                className="bg-[var(--surface-card)] border border-[var(--border-default)] shadow-xs hover:border-[var(--border-focus)] transition-colors"
-                data-testid={`task-shell-item-${task.id}`}
-              >
-                <CardContent className="p-3.5 sm:p-4 flex items-start sm:items-center justify-between gap-3 flex-col sm:flex-row">
-                  <div className="space-y-1 min-w-0">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <span
-                        className={`text-sm font-semibold ${
-                          task.status === 'completed'
-                            ? 'line-through text-label-tertiary'
-                            : 'text-label-primary'
-                        }`}
-                      >
-                        {task.title}
-                      </span>
-                      <Badge
-                        variant={getPriorityBadgeVariant(task.priority)}
-                        className="text-[10px]"
-                      >
-                        {task.priority.toUpperCase()}
-                      </Badge>
-                      {task.status === 'completed' && (
-                        <Badge variant="glass-success" className="text-[10px] gap-1">
-                          <CheckCircle2 className="h-2.5 w-2.5" />
-                          SELESAI
-                        </Badge>
-                      )}
-                    </div>
+      {/* 5. Task List Component */}
+      <TaskList
+        tasks={tasks}
+        activeFilter={activeFilter}
+        onToggleStatus={handleToggleStatus}
+        onEdit={handleEditTask}
+        onDelete={handleDeleteClick}
+        mutatingTaskIds={mutatingTaskIds}
+        onCreateClick={handleOpenCreateModal}
+      />
 
-                    {task.description && (
-                      <p className="text-xs text-label-secondary line-clamp-1">
-                        {task.description}
-                      </p>
-                    )}
+      {/* 6. Create / Edit Task Form Modal */}
+      <TaskFormModal
+        isOpen={isFormModalOpen}
+        onClose={() => {
+          setIsFormModalOpen(false)
+          setEditingTask(null)
+        }}
+        onSubmit={handleFormSubmit}
+        initialData={editingTask}
+        applicationOptions={applicationOptions}
+        isSubmitting={isSubmittingForm}
+      />
 
-                    <div className="flex items-center gap-3 text-xs text-label-tertiary flex-wrap pt-0.5">
-                      {task.due_date && (
-                        <span className="flex items-center gap-1">
-                          <Calendar className="h-3 w-3" />
-                          <span>{task.due_date}</span>
-                        </span>
-                      )}
-                      {task.application && (
-                        <span className="flex items-center gap-1 font-medium text-label-secondary">
-                          <Building2 className="h-3 w-3" />
-                          <span>
-                            {task.application.company_name} — {task.application.job_title}
-                          </span>
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        )}
-      </div>
+      {/* 7. Delete Confirmation Dialog */}
+      <TaskDeleteDialog
+        isOpen={Boolean(deletingTask)}
+        onClose={() => setDeletingTask(null)}
+        onConfirm={handleConfirmDelete}
+        task={deletingTask}
+        isDeleting={isDeleting}
+      />
 
       {/* Hidden debug metadata for test validation */}
       <div

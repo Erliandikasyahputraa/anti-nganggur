@@ -20,6 +20,7 @@ vi.mock('next/navigation', () => ({
 
 vi.mock('@/lib/api/tasks', () => ({
   getTasks: vi.fn(),
+  sortTasksDeterministically: vi.fn((tasks: any[]) => tasks),
 }))
 
 vi.mock('@/lib/api/applications', () => ({
