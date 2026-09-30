@@ -1,4 +1,4 @@
-export type TabType = 'overview' | 'company' | 'documents' | 'timeline'
+export type TabType = 'overview' | 'company' | 'documents' | 'timeline' | 'tasks'
 
 export interface ApplicationDetailState {
   activeTab: TabType

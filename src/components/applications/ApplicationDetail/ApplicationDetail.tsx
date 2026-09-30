@@ -116,15 +116,15 @@ export function ApplicationDetail({
           )}
 
           {isEditMode ? (
-            <div className="flex flex-col max-h-[90vh] bg-[var(--modal-shell)]">
+            <div className="flex flex-col max-h-[90vh] max-sm:max-h-[92vh] bg-[var(--modal-shell)] overflow-hidden">
               {/* Edit Mode Header */}
-              <div className="bg-[var(--modal-header)] border-b border-[var(--modal-divider)] rounded-t-2xl max-sm:rounded-t-2xl p-6 shrink-0">
+              <div className="bg-[var(--modal-header)] border-b border-[var(--modal-divider)] rounded-t-2xl max-sm:rounded-t-2xl p-4 sm:p-6 shrink-0">
                 <div className="flex items-center justify-between">
                   <div>
-                    <h2 className="text-2xl font-bold text-[var(--text-primary)] tracking-tight">
+                    <h2 className="text-xl sm:text-2xl font-bold text-[var(--text-primary)] tracking-tight">
                       Edit Application
                     </h2>
-                    <p className="text-sm text-[var(--text-secondary)] mt-1">
+                    <p className="text-xs sm:text-sm text-[var(--text-secondary)] mt-0.5 sm:mt-1">
                       Update the details for your application to {application.company_name}
                     </p>
                   </div>
@@ -132,7 +132,7 @@ export function ApplicationDetail({
                     variant="ghost"
                     size="sm"
                     onClick={handleCancelEdit}
-                    className="text-[var(--text-secondary)] hover:text-[var(--text-primary)] p-2 rounded-lg"
+                    className="text-[var(--text-secondary)] hover:text-[var(--text-primary)] min-w-[44px] min-h-[44px] sm:min-w-[36px] sm:min-h-[36px] p-2 rounded-lg"
                     aria-label="Close"
                   >
                     <X className="w-5 h-5" />
@@ -141,7 +141,7 @@ export function ApplicationDetail({
               </div>
 
               {/* Form Content - Scrollable with recessed canvas background */}
-              <div className="overflow-y-auto p-6 bg-[var(--modal-canvas)]">
+              <div className="flex-1 overflow-y-auto p-4 sm:p-6 bg-[var(--modal-canvas)]">
                 <ApplicationForm
                   onSubmit={handleFormSubmit}
                   onCancel={handleCancelEdit}

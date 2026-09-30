@@ -10,6 +10,12 @@ interface TabNavigationProps {
   onTabChange: (tab: TabType) => void
   disabled?: boolean
   variant?: 'sidebar' | 'bottom-bar'
+  items?: Array<{
+    id: TabType
+    label: string
+    icon: React.ComponentType<{ className?: string }>
+    description: string
+  }>
 }
 
 const allTabItems: Array<{
@@ -49,6 +55,7 @@ export function TabNavigation({
   onTabChange,
   disabled = false,
   variant = 'sidebar',
+  items,
 }: TabNavigationProps) {
   const handleTabClick = React.useCallback(
     (tabId: TabType) => {
@@ -59,13 +66,12 @@ export function TabNavigation({
     [disabled, onTabChange]
   )
 
-  // Both desktop sidebar and mobile bottom-bar show all 4 tabs: Overview, Company, Documents, Timeline
-  const tabItems = allTabItems
+  const tabItems = items ?? allTabItems
 
   if (variant === 'bottom-bar') {
     return (
       <nav
-        className="grid grid-cols-4 gap-1 p-1"
+        className="flex items-center gap-1 p-1 overflow-x-auto scrollbar-none snap-x"
         role="tablist"
         aria-label="Application detail navigation"
       >
@@ -84,7 +90,7 @@ export function TabNavigation({
               disabled={disabled}
               onClick={() => handleTabClick(tab.id)}
               className={cn(
-                'relative flex flex-col items-center justify-center py-1.5 px-1 rounded-xl transition-all duration-150',
+                'relative flex-1 min-w-[68px] sm:min-w-[76px] shrink-0 sm:shrink snap-center flex flex-col items-center justify-center py-1.5 px-1 rounded-xl transition-all duration-150',
                 'focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:ring-offset-1',
                 'min-h-[48px]',
                 isActive

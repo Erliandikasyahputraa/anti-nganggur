@@ -290,14 +290,14 @@ export default function ApplicationForm({
           />
         </div>
 
-        <div className="flex justify-end gap-3 pt-4 border-t border-border">
+        <div className="sticky bottom-0 z-10 flex flex-col-reverse sm:flex-row sm:justify-end gap-2.5 sm:gap-3 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] px-4 sm:px-0 sm:py-4 -mx-4 sm:mx-0 sm:static bg-[var(--modal-shell)] sm:bg-transparent border-t border-[var(--modal-divider)] sm:border-border mt-6">
           {onCancel && (
             <Button
               type="button"
               variant="outline"
               onClick={onCancel}
               disabled={isLoading}
-              className="min-w-[100px]"
+              className="w-full sm:w-auto min-w-[100px] min-h-[44px] sm:min-h-[38px] rounded-xl font-medium"
             >
               Cancel
             </Button>
@@ -306,7 +306,7 @@ export default function ApplicationForm({
             type="submit"
             variant="copper"
             disabled={isLoading}
-            className="min-w-[160px] font-semibold"
+            className="w-full sm:w-auto min-w-[160px] min-h-[44px] sm:min-h-[38px] rounded-xl font-semibold shadow-xs"
           >
             {isLoading
               ? submitButtonText === 'Save Changes'

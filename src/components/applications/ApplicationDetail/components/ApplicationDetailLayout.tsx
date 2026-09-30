@@ -52,18 +52,18 @@ export function ApplicationDetailLayout({
       {/* Header */}
       <div className="bg-[var(--modal-header)] border-b border-[var(--modal-divider)] rounded-t-2xl shrink-0">
         {/* Primary Header Info */}
-        <div className="flex items-start justify-between gap-3 p-4 sm:p-6 pb-3">
-          <div className="flex items-center gap-3 sm:gap-4 min-w-0">
+        <div className="flex items-start justify-between gap-2.5 sm:gap-3 p-3 sm:p-6 pb-2.5 sm:pb-3">
+          <div className="flex items-center gap-2.5 sm:gap-4 min-w-0">
             <CompanyLogo
               companyName={application.company_name}
               size="md"
-              className="flex-shrink-0 rounded-xl h-11 w-11 sm:h-16 sm:w-16"
+              className="flex-shrink-0 rounded-xl h-10 w-10 sm:h-16 sm:w-16"
             />
             <div className="flex-1 min-w-0">
-              <h1 className="text-lg sm:text-2xl font-semibold text-[var(--text-primary)] truncate leading-tight tracking-tight">
+              <h1 className="text-base sm:text-2xl font-semibold text-[var(--text-primary)] truncate leading-tight tracking-tight">
                 {application.job_title}
               </h1>
-              <p className="text-sm sm:text-base font-medium text-[var(--text-secondary)] truncate leading-tight mt-0.5">
+              <p className="text-xs sm:text-base font-medium text-[var(--text-secondary)] truncate leading-tight mt-0.5">
                 {application.company_name}
               </p>
             </div>
@@ -79,11 +79,11 @@ export function ApplicationDetailLayout({
           />
         </div>
 
-        {/* Metadata Strip */}
-        <div className="flex flex-wrap items-center gap-x-4 sm:gap-x-6 gap-y-2 px-4 sm:px-6 pb-3 sm:pb-4 text-xs sm:text-sm text-[var(--text-secondary)] border-t border-[var(--modal-divider)] pt-2.5 sm:pt-3">
+        {/* Metadata Strip: Single-line horizontal scroll on mobile, flex-wrap on desktop */}
+        <div className="flex items-center gap-x-3 sm:gap-x-6 gap-y-1.5 px-3.5 sm:px-6 py-2 sm:py-3 text-xs sm:text-sm text-[var(--text-secondary)] border-t border-[var(--modal-divider)] overflow-x-auto sm:overflow-visible sm:flex-wrap scrollbar-none whitespace-nowrap">
           {/* Location */}
           {application.location && (
-            <div className="flex items-center gap-1.5">
+            <div className="shrink-0 inline-flex items-center gap-1.5">
               <MapPin
                 className="h-3.5 w-3.5 text-[var(--text-muted)] shrink-0"
                 aria-hidden="true"
@@ -94,7 +94,7 @@ export function ApplicationDetailLayout({
 
           {/* Salary */}
           {application.salary_range && (
-            <div className="flex items-center gap-1.5">
+            <div className="shrink-0 inline-flex items-center gap-1.5">
               <WalletCards
                 className="h-3.5 w-3.5 text-[var(--text-muted)] shrink-0"
                 aria-hidden="true"
@@ -106,7 +106,7 @@ export function ApplicationDetailLayout({
           )}
 
           {/* Status */}
-          <div className="flex items-center gap-1.5">
+          <div className="shrink-0 inline-flex items-center gap-1.5">
             <Activity
               className="h-3.5 w-3.5 text-[var(--text-muted)] shrink-0"
               aria-hidden="true"
@@ -117,7 +117,7 @@ export function ApplicationDetailLayout({
           </div>
 
           {/* Column */}
-          <div className="flex items-center gap-1.5">
+          <div className="shrink-0 inline-flex items-center gap-1.5">
             <KanbanSquare
               className="h-3.5 w-3.5 text-[var(--text-muted)] shrink-0"
               aria-hidden="true"
@@ -126,7 +126,7 @@ export function ApplicationDetailLayout({
           </div>
 
           {/* Date Applied */}
-          <div className="flex items-center gap-1.5">
+          <div className="shrink-0 inline-flex items-center gap-1.5">
             <Calendar
               className="h-3.5 w-3.5 text-[var(--text-muted)] shrink-0"
               aria-hidden="true"
@@ -141,7 +141,7 @@ export function ApplicationDetailLayout({
           </div>
 
           {/* Source */}
-          <div className="flex items-center gap-1.5">
+          <div className="shrink-0 inline-flex items-center gap-1.5">
             <Compass className="h-3.5 w-3.5 text-[var(--text-muted)] shrink-0" aria-hidden="true" />
             <span className="font-medium text-[var(--text-primary)]">
               Added from {application.source || 'external'}
