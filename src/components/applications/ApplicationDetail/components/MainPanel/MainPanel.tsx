@@ -7,12 +7,14 @@ import type { Application, CustomColumnDB } from '@/lib/types/database.types'
 import { JobDescription } from './JobDescription'
 import { CompanyInfo } from './CompanyInfo'
 import { Documents } from './Documents'
+import { ApplicationTasks } from './ApplicationTasks'
 import { ApplicationTimeline } from '../RightPanel/ApplicationTimeline'
 
 interface MainPanelProps {
   application: Application
   activeTab: TabType
   customColumns?: CustomColumnDB[]
+  onPendingCountChange?: (count: number) => void
   className?: string
 }
 
@@ -20,6 +22,7 @@ export function MainPanel({
   application,
   activeTab,
   customColumns = [],
+  onPendingCountChange,
   className,
 }: MainPanelProps) {
   const renderContent = () => {
@@ -32,6 +35,10 @@ export function MainPanel({
         return <Documents _application={application} />
       case 'timeline':
         return <ApplicationTimeline application={application} customColumns={customColumns} />
+      case 'tasks':
+        return (
+          <ApplicationTasks application={application} onPendingCountChange={onPendingCountChange} />
+        )
       default:
         return <JobDescription application={application} />
     }

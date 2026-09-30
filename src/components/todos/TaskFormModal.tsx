@@ -23,7 +23,9 @@ export interface TaskFormModalProps {
   onClose: () => void
   onSubmit: (data: CreateTaskInput | UpdateTaskInput) => Promise<void>
   initialData?: TaskWithApplication | null
-  applicationOptions: ApplicationOption[]
+  applicationOptions?: ApplicationOption[]
+  defaultApplicationId?: string
+  lockApplication?: boolean
   isSubmitting?: boolean
 }
 
@@ -32,7 +34,9 @@ export function TaskFormModal({
   onClose,
   onSubmit,
   initialData,
-  applicationOptions,
+  applicationOptions = [],
+  defaultApplicationId,
+  lockApplication = false,
   isSubmitting = false,
 }: TaskFormModalProps) {
   const isEditing = Boolean(initialData)
@@ -41,7 +45,7 @@ export function TaskFormModal({
   const [description, setDescription] = React.useState('')
   const [priority, setPriority] = React.useState<TaskPriority>('medium')
   const [dueDate, setDueDate] = React.useState('')
-  const [applicationId, setApplicationId] = React.useState('')
+  const [applicationId, setApplicationId] = React.useState(defaultApplicationId || '')
   const [errors, setErrors] = React.useState<{ title?: string }>({})
 
   // Synchronize form fields whenever initialData or isOpen changes
@@ -52,17 +56,17 @@ export function TaskFormModal({
         setDescription(initialData.description || '')
         setPriority(initialData.priority || 'medium')
         setDueDate(initialData.due_date || '')
-        setApplicationId(initialData.application_id || '')
+        setApplicationId(initialData.application_id || defaultApplicationId || '')
       } else {
         setTitle('')
         setDescription('')
         setPriority('medium')
         setDueDate('')
-        setApplicationId('')
+        setApplicationId(defaultApplicationId || '')
       }
       setErrors({})
     }
-  }, [isOpen, initialData])
+  }, [isOpen, initialData, defaultApplicationId])
 
   const validateForm = () => {
     const trimmedTitle = title.trim()
@@ -90,7 +94,7 @@ export function TaskFormModal({
       description: description.trim() ? description.trim() : null,
       priority,
       due_date: dueDate || null,
-      application_id: applicationId || null,
+      application_id: lockApplication ? defaultApplicationId || null : applicationId || null,
     }
 
     try {
@@ -234,18 +238,26 @@ export function TaskFormModal({
             </Label>
             <select
               id="task-application"
-              value={applicationId}
-              onChange={e => setApplicationId(e.target.value)}
-              disabled={isSubmitting}
+              value={lockApplication ? defaultApplicationId || '' : applicationId}
+              onChange={e => {
+                if (!lockApplication) {
+                  setApplicationId(e.target.value)
+                }
+              }}
+              disabled={isSubmitting || lockApplication}
               className="flex min-h-[44px] w-full rounded-md border border-input bg-[var(--surface-input)] px-3 py-2 text-sm text-foreground shadow-xs transition-colors hover:border-[var(--border-strong)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 truncate"
               data-testid="task-form-app-select"
             >
-              <option value="">Tanpa Lamaran (Tugas Mandiri)</option>
-              {applicationOptions.map(app => (
-                <option key={app.id} value={app.id}>
-                  {app.company_name} — {app.job_title}
-                </option>
-              ))}
+              {!lockApplication && <option value="">Tanpa Lamaran (Tugas Mandiri)</option>}
+              {applicationOptions.length > 0 ? (
+                applicationOptions.map(app => (
+                  <option key={app.id} value={app.id}>
+                    {app.company_name} — {app.job_title}
+                  </option>
+                ))
+              ) : lockApplication && defaultApplicationId ? (
+                <option value={defaultApplicationId}>Lamaran Terpilih</option>
+              ) : null}
             </select>
           </div>
 

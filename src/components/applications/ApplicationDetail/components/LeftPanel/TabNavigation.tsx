@@ -1,7 +1,7 @@
 'use client'
 
 import * as React from 'react'
-import { FileText, Building, FolderOpen, Clock } from 'lucide-react'
+import { FileText, Building, FolderOpen, Clock, CheckSquare } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import type { TabType } from '../../types'
 
@@ -10,6 +10,7 @@ interface TabNavigationProps {
   onTabChange: (tab: TabType) => void
   disabled?: boolean
   variant?: 'sidebar' | 'bottom-bar'
+  pendingTaskCount?: number
   items?: Array<{
     id: TabType
     label: string
@@ -48,6 +49,12 @@ const allTabItems: Array<{
     icon: Clock,
     description: 'Activity history',
   },
+  {
+    id: 'tasks',
+    label: 'Tasks',
+    icon: CheckSquare,
+    description: 'Checklist and action items',
+  },
 ]
 
 export function TabNavigation({
@@ -55,6 +62,7 @@ export function TabNavigation({
   onTabChange,
   disabled = false,
   variant = 'sidebar',
+  pendingTaskCount,
   items,
 }: TabNavigationProps) {
   const handleTabClick = React.useCallback(
@@ -120,6 +128,17 @@ export function TabNavigation({
               >
                 {tab.label}
               </span>
+              {tab.id === 'tasks' &&
+                typeof pendingTaskCount === 'number' &&
+                pendingTaskCount > 0 && (
+                  <span
+                    className="absolute top-1 right-2 sm:right-3 px-1.5 py-0.5 text-[10px] font-bold rounded-full bg-amber-500 text-white min-w-[16px] text-center leading-none shadow-xs"
+                    data-testid="tasks-pending-badge"
+                    aria-label={`${pendingTaskCount} pending tasks`}
+                  >
+                    {pendingTaskCount > 99 ? '99+' : pendingTaskCount}
+                  </span>
+                )}
             </button>
           )
         })}
@@ -178,6 +197,15 @@ export function TabNavigation({
                 {tab.description}
               </div>
             </div>
+            {tab.id === 'tasks' && typeof pendingTaskCount === 'number' && pendingTaskCount > 0 && (
+              <span
+                className="ml-auto px-2 py-0.5 text-xs font-semibold rounded-full bg-amber-500/15 text-amber-700 dark:text-amber-300"
+                data-testid="tasks-pending-badge"
+                aria-label={`${pendingTaskCount} pending tasks`}
+              >
+                {pendingTaskCount > 99 ? '99+' : pendingTaskCount}
+              </span>
+            )}
           </button>
         )
       })}

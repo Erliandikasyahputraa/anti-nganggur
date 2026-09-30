@@ -89,6 +89,8 @@ export function ApplicationDetail({
     onClose,
   })
 
+  const [pendingTaskCount, setPendingTaskCount] = React.useState<number | undefined>(undefined)
+
   return (
     <>
       <Dialog open={isOpen} onOpenChange={onClose}>
@@ -172,6 +174,8 @@ export function ApplicationDetail({
               onTabChange={setActiveTab}
               onEdit={handleEditClick}
               onDeleteClick={handleDeleteClick}
+              pendingTaskCount={pendingTaskCount}
+              onPendingCountChange={setPendingTaskCount}
             />
           )}
         </DialogContent>

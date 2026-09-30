@@ -23,6 +23,8 @@ interface ApplicationDetailLayoutProps {
   onTabChange: (tab: TabType) => void
   onEdit: () => void
   onDeleteClick: () => void
+  pendingTaskCount?: number
+  onPendingCountChange?: (count: number) => void
 }
 
 export function ApplicationDetailLayout({
@@ -36,6 +38,8 @@ export function ApplicationDetailLayout({
   onTabChange,
   onEdit,
   onDeleteClick,
+  pendingTaskCount,
+  onPendingCountChange,
 }: ApplicationDetailLayoutProps) {
   const columnName = application.custom_column_id
     ? customColumns.find(c => c.id === application.custom_column_id)?.name || 'Custom Column'
@@ -159,6 +163,7 @@ export function ApplicationDetailLayout({
             onTabChange={onTabChange}
             disabled={isEditMode}
             variant="sidebar"
+            pendingTaskCount={pendingTaskCount}
           />
         </div>
 
@@ -168,6 +173,7 @@ export function ApplicationDetailLayout({
             application={application}
             activeTab={activeTab}
             customColumns={customColumns}
+            onPendingCountChange={onPendingCountChange}
           />
         </div>
       </div>
@@ -179,6 +185,7 @@ export function ApplicationDetailLayout({
           onTabChange={onTabChange}
           disabled={isEditMode}
           variant="bottom-bar"
+          pendingTaskCount={pendingTaskCount}
         />
       </div>
     </div>

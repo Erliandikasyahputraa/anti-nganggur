@@ -747,30 +747,32 @@ describe('ApplicationDetail', () => {
       cleanup()
     })
 
-    it('bottom-bar TabNavigation renders 4 compact tabs without subtitle descriptions', () => {
+    it('bottom-bar TabNavigation renders 5 compact tabs without subtitle descriptions', () => {
       render(<TabNavigation activeTab="overview" onTabChange={() => {}} variant="bottom-bar" />)
 
-      // Should render exactly 4 tabs in bottom-bar variant
+      // Should render exactly 5 tabs in bottom-bar variant
       const tabs = screen.getAllByRole('tab')
-      expect(tabs).toHaveLength(4)
+      expect(tabs).toHaveLength(5)
 
-      // Should include the Timeline tab
+      // Should include Timeline and Tasks tabs
       expect(screen.getByText('Timeline')).toBeInTheDocument()
+      expect(screen.getByText('Tasks')).toBeInTheDocument()
 
       // Should NOT render tab descriptions (bottom-bar omits subtitles)
       expect(screen.queryByText('Job description and details')).not.toBeInTheDocument()
       expect(screen.queryByText('Activity history')).not.toBeInTheDocument()
     })
 
-    it('sidebar TabNavigation renders 4 tabs including timeline', () => {
+    it('sidebar TabNavigation renders 5 tabs including timeline and tasks', () => {
       render(<TabNavigation activeTab="overview" onTabChange={() => {}} variant="sidebar" />)
 
-      // Sidebar should render exactly 4 tabs (including timeline)
+      // Sidebar should render exactly 5 tabs (including timeline and tasks)
       const tabs = screen.getAllByRole('tab')
-      expect(tabs).toHaveLength(4)
+      expect(tabs).toHaveLength(5)
 
-      // Timeline tab MUST appear in sidebar variant
+      // Timeline and Tasks tabs MUST appear in sidebar variant
       expect(screen.getByText('Timeline')).toBeInTheDocument()
+      expect(screen.getByText('Tasks')).toBeInTheDocument()
 
       // Descriptions should be visible in sidebar
       expect(screen.getByText('Job description and details')).toBeInTheDocument()
@@ -835,7 +837,7 @@ describe('ApplicationDetail', () => {
       )
 
       const tabs = screen.getAllByRole('tab')
-      expect(tabs).toHaveLength(4)
+      expect(tabs).toHaveLength(5)
 
       // Active tab (overview) assertions
       const activeTab = tabs[0]
@@ -867,7 +869,7 @@ describe('ApplicationDetail', () => {
 
       // SVG Icon accessibility
       const icons = container.querySelectorAll('svg')
-      expect(icons.length).toBe(4)
+      expect(icons.length).toBe(5)
       icons.forEach(icon => {
         expect(icon).toHaveAttribute('aria-hidden', 'true')
       })
