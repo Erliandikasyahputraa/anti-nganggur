@@ -111,3 +111,42 @@ export type ApplicationStatusHistoryInsert = Omit<
   ApplicationStatusHistoryDB,
   'id' | 'created_at' | 'user_id'
 >
+
+export type TaskStatus = 'pending' | 'completed'
+
+export type TaskPriority = 'low' | 'medium' | 'high'
+
+export interface TaskDB {
+  id: string
+  user_id: string
+  application_id: string | null
+  title: string
+  description: string | null
+  status: TaskStatus
+  priority: TaskPriority
+  due_date: string | null
+  completed_at: string | null
+  created_at: string
+  updated_at: string
+}
+
+export type TaskInsert = {
+  title: string
+  description?: string | null
+  status?: TaskStatus
+  priority?: TaskPriority
+  due_date?: string | null
+  completed_at?: string | null
+  application_id?: string | null
+  user_id?: string
+}
+
+export type TaskUpdate = Partial<Omit<TaskDB, 'id' | 'user_id' | 'created_at' | 'updated_at'>>
+
+export interface TaskWithApplication extends TaskDB {
+  application?: {
+    id: string
+    job_title: string
+    company_name: string
+  } | null
+}
