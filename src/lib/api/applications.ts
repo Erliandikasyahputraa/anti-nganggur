@@ -11,6 +11,7 @@ import {
   bulkStatusUpdateSchema,
   bulkCustomColumnUpdateSchema,
 } from '@/lib/schemas/bulk.schema'
+import { getNormalizedErrorMessage } from '@/lib/utils/error-handler'
 
 async function verifyAuthenticationContext(
   supabase: SupabaseClient,
@@ -523,5 +524,47 @@ export async function getApplicationHistory(
       console.error('getApplicationHistory error:', error)
     }
     return []
+  }
+}
+
+export interface ApplicationOption {
+  id: string
+  company_name: string
+  job_title: string
+}
+
+/**
+ * Fetch lightweight application options (id, company_name, job_title) for selection dropdowns.
+ * Scoped strictly to the authenticated user and ordered alphabetically by company_name.
+ */
+export async function getApplicationOptions(
+  supabase: SupabaseClient,
+  userId?: string
+): Promise<ApplicationOption[]> {
+  try {
+    const authenticatedUserId = await verifyAuthenticationContext(supabase, userId)
+
+    const { data, error } = await supabase
+      .from('applications')
+      .select('id, company_name, job_title')
+      .eq('user_id', authenticatedUserId)
+      .order('company_name', { ascending: true })
+
+    if (error) {
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Database query error in getApplicationOptions:', error)
+      }
+      throw new Error(getNormalizedErrorMessage(error, 'Gagal memuat daftar opsi lamaran.'))
+    }
+
+    return (data || []) as ApplicationOption[]
+  } catch (error) {
+    if (process.env.NODE_ENV === 'development') {
+      console.error('getApplicationOptions error:', error)
+    }
+    if (error instanceof Error) {
+      throw error
+    }
+    throw new Error('Gagal memuat daftar opsi lamaran.')
   }
 }
