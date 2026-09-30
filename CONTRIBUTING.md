@@ -388,7 +388,7 @@ This project follows a Code of Conduct. By participating, you agree to uphold th
 ## ❓ Questions?
 
 - 📖 Check the [README](./README.md) for project overview
-- 🏗️ See [ARCHITECTURE.md](./ARCHITECTURE.md) for technical details
+- 🏗️ See [docs/system-architecture.md](./docs/system-architecture.md) for technical details
 - 💬 Open a GitHub Discussion for questions
 - 🐛 Open an issue for bugs
 

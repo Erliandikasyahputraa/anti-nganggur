@@ -2,8 +2,7 @@
 
 import * as React from 'react'
 import { Plus, Rocket, Lightbulb } from 'lucide-react'
-import { NavBar } from '@/components/layout/NavBar'
-import { AnimatedBackground } from '@/components/layout/AnimatedBackground'
+import { AppShell } from '@/components/layout/AppShell'
 import { KanbanBoardV3 } from '@/components/applications/KanbanBoardV3'
 import ApplicationForm from '@/components/applications/ApplicationForm'
 import { ApplicationDetail } from '@/components/applications/ApplicationDetail'
@@ -565,41 +564,35 @@ function ApplicationsPageContent() {
 
   if (isLoading) {
     return (
-      <AnimatedBackground variant="minimal">
-        <div className="min-h-screen flex flex-col">
-          <NavBar variant="authenticated" user={user} />
-          <main className="mx-auto w-full flex-1 px-4 py-4 flex flex-col">
-            <div className="flex flex-1 items-center justify-center p-8 glass-ultra rounded-glass shadow-glass-subtle">
-              <p className="text-label-secondary">Loading applications...</p>
-            </div>
-          </main>
+      <AppShell user={user}>
+        <div className="w-full flex-1 px-4 flex flex-col">
+          <div className="flex flex-1 items-center justify-center p-8 glass-ultra rounded-glass shadow-glass-subtle">
+            <p className="text-label-secondary">Loading applications...</p>
+          </div>
         </div>
-      </AnimatedBackground>
+      </AppShell>
     )
   }
 
   if (error) {
     return (
-      <AnimatedBackground variant="minimal">
-        <div className="min-h-screen flex flex-col">
-          <NavBar variant="authenticated" user={user} />
-          <main className="mx-auto w-full flex-1 px-4 py-4 flex flex-col">
-            <div className="flex flex-1 items-center justify-center p-8 glass-light rounded-glass shadow-glass-soft">
-              <div className="text-center">
-                <p
-                  className="text-label-primary font-medium mb-4"
-                  style={{ color: 'var(--color-error)' }}
-                >
-                  {error}
-                </p>
-                <Button onClick={() => window.location.reload()} className="mt-4 btn-glass">
-                  Retry
-                </Button>
-              </div>
+      <AppShell user={user}>
+        <div className="w-full flex-1 px-4 flex flex-col">
+          <div className="flex flex-1 items-center justify-center p-8 glass-light rounded-glass shadow-glass-soft">
+            <div className="text-center">
+              <p
+                className="text-label-primary font-medium mb-4"
+                style={{ color: 'var(--color-error)' }}
+              >
+                {error}
+              </p>
+              <Button onClick={() => window.location.reload()} className="mt-4 btn-glass">
+                Retry
+              </Button>
             </div>
-          </main>
+          </div>
         </div>
-      </AnimatedBackground>
+      </AppShell>
     )
   }
 
@@ -607,168 +600,162 @@ function ApplicationsPageContent() {
   const isFilterEmpty = !isDatabaseEmpty && processedApplications.length === 0
 
   return (
-    <AnimatedBackground variant="minimal">
-      <div className="min-h-screen flex flex-col">
-        <NavBar variant="authenticated" user={user} />
+    <AppShell user={user}>
+      <div className="w-full flex-1 px-4 flex flex-col">
+        {isDatabaseEmpty && !isNewApplicationModalOpen ? (
+          <div className="flex flex-1 flex-col items-center justify-center min-h-[60vh] px-4">
+            <div className="max-w-md text-center space-y-6 glass-ultra rounded-glass-lg p-8 shadow-glass-soft">
+              <div className="flex justify-center">
+                <Rocket className="h-24 w-24" style={{ color: 'var(--tint-blue)' }} />
+              </div>
 
-        <main className="mx-auto w-full flex-1 px-4 py-4 flex flex-col">
-          {isDatabaseEmpty && !isNewApplicationModalOpen ? (
-            <div className="flex flex-1 flex-col items-center justify-center min-h-[60vh] px-4">
-              <div className="max-w-md text-center space-y-6 glass-ultra rounded-glass-lg p-8 shadow-glass-soft">
-                <div className="flex justify-center">
-                  <Rocket className="h-24 w-24" style={{ color: 'var(--tint-blue)' }} />
-                </div>
+              <div className="space-y-2">
+                <h2 className="text-3xl font-semibold text-label-primary">
+                  Start Your Job Hunt Journey
+                </h2>
+                <p className="text-label-secondary text-lg">
+                  Track applications, ace interviews, land your dream job
+                </p>
+              </div>
 
-                <div className="space-y-2">
-                  <h2 className="text-3xl font-semibold text-label-primary">
-                    Start Your Job Hunt Journey
-                  </h2>
-                  <p className="text-label-secondary text-lg">
-                    Track applications, ace interviews, land your dream job
-                  </p>
-                </div>
+              <Button
+                onClick={handleOpenNewModal}
+                size="lg"
+                className="w-full sm:w-auto btn-glass font-semibold"
+              >
+                <Plus className="mr-2 h-5 w-5" />
+                Add Your First Application
+              </Button>
 
-                <Button
-                  onClick={handleOpenNewModal}
-                  size="lg"
-                  className="w-full sm:w-auto btn-glass font-semibold"
-                >
-                  <Plus className="mr-2 h-5 w-5" />
-                  Add Your First Application
-                </Button>
-
-                <div
-                  className="glass-medium rounded-glass-sm p-4 shadow-glass-subtle"
-                  style={{ border: '1px solid var(--glass-border-medium)' }}
-                >
-                  <p className="text-sm text-label-primary flex items-center gap-2">
-                    <Lightbulb className="h-4 w-4" style={{ color: 'var(--tint-yellow)' }} />
-                    <span>
-                      Tip: Start by adding jobs you&apos;re interested in to your wishlist
-                    </span>
-                  </p>
-                </div>
+              <div
+                className="glass-medium rounded-glass-sm p-4 shadow-glass-subtle"
+                style={{ border: '1px solid var(--glass-border-medium)' }}
+              >
+                <p className="text-sm text-label-primary flex items-center gap-2">
+                  <Lightbulb className="h-4 w-4" style={{ color: 'var(--tint-yellow)' }} />
+                  <span>Tip: Start by adding jobs you&apos;re interested in to your wishlist</span>
+                </p>
               </div>
             </div>
-          ) : (
-            <div className="flex-1 flex flex-col h-full">
-              {selectedIds.size > 0 ? (
-                <div className="p-4 pb-0">
-                  <BulkActionsToolbar
-                    selectedCount={selectedIds.size}
-                    totalVisibleCount={processedApplications.length}
-                    customColumns={customColumns}
-                    isMutating={isBulkMutating}
-                    onToggleSelectAll={handleToggleSelectAll}
-                    onUpdateStatus={handleBulkUpdateStatus}
-                    onUpdateCustomColumn={handleBulkUpdateCustomColumn}
-                    onDelete={handleBulkDelete}
-                    onClearSelection={handleClearSelection}
-                  />
-                </div>
-              ) : (
-                <ApplicationsToolbar
-                  filters={displayFilters}
-                  onSearchChange={handleSearchChange}
-                  onStatusFilterChange={handleStatusFilterChange}
-                  onCustomColumnFilterChange={handleCustomColumnFilterChange}
-                  onDateRangeChange={handleDateRangeChange}
-                  onSortChange={handleSortChange}
-                  onClearFilters={handleClearFilters}
+          </div>
+        ) : (
+          <div className="flex-1 flex flex-col h-full">
+            {selectedIds.size > 0 ? (
+              <div className="p-4 pb-0">
+                <BulkActionsToolbar
+                  selectedCount={selectedIds.size}
+                  totalVisibleCount={processedApplications.length}
                   customColumns={customColumns}
-                  onManageColumns={() => setIsManageColumnsModalOpen(true)}
-                  onNewApplication={handleOpenNewModal}
-                  onExport={handleExport}
-                  isExporting={isExporting}
-                />
-              )}
-
-              <FilterChips
-                filters={displayFilters}
-                onRemoveStatus={handleStatusFilterChange}
-                onRemoveCustomColumn={handleCustomColumnFilterChange}
-                onClearDate={() => handleDateRangeChange('all')}
-                onClearAll={handleClearFilters}
-                customColumns={customColumns}
-              />
-
-              {isFilterEmpty ? (
-                <div className="flex flex-1 items-center justify-center p-8 mt-4">
-                  <div className="text-center space-y-4">
-                    <h3 className="text-xl font-medium text-label-primary">
-                      No applications match your filters
-                    </h3>
-                    <p className="text-label-secondary">
-                      Try adjusting your search or active filters.
-                    </p>
-                    <Button onClick={handleClearFilters} variant="outline" className="glass-light">
-                      Clear all filters
-                    </Button>
-                  </div>
-                </div>
-              ) : (
-                <KanbanBoardV3
-                  applications={processedApplications}
-                  customColumns={customColumns}
-                  onUpdateApplicationColumn={handleUpdateApplicationColumn}
-                  onBulkMoveApplications={handleBulkMoveApplications}
-                  onApplicationClick={handleApplicationClick}
-                  isLoading={false}
-                  sortOption={filters.sortOption}
-                  selectedIds={selectedIds}
-                  onToggleSelect={handleToggleSelect}
                   isMutating={isBulkMutating}
+                  onToggleSelectAll={handleToggleSelectAll}
+                  onUpdateStatus={handleBulkUpdateStatus}
+                  onUpdateCustomColumn={handleBulkUpdateCustomColumn}
+                  onDelete={handleBulkDelete}
+                  onClearSelection={handleClearSelection}
                 />
-              )}
-            </div>
-          )}
-        </main>
-
-        {/* New Application Modal */}
-        <Dialog open={isNewApplicationModalOpen} onOpenChange={handleCloseNewModal}>
-          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto w-full max-sm:fixed max-sm:bottom-0 max-sm:top-auto max-sm:left-0 max-sm:translate-x-0 max-sm:translate-y-0 max-sm:rounded-b-none max-sm:rounded-t-2xl max-sm:max-h-[92vh] max-sm:p-5">
-            <DialogHeader>
-              <DialogTitle>Add New Application</DialogTitle>
-              <DialogDescription>
-                Fill in the details of your job application below.
-              </DialogDescription>
-            </DialogHeader>
-
-            {createError && (
-              <div className="rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 p-4 text-sm text-red-800 dark:text-red-200">
-                {createError}
               </div>
+            ) : (
+              <ApplicationsToolbar
+                filters={displayFilters}
+                onSearchChange={handleSearchChange}
+                onStatusFilterChange={handleStatusFilterChange}
+                onCustomColumnFilterChange={handleCustomColumnFilterChange}
+                onDateRangeChange={handleDateRangeChange}
+                onSortChange={handleSortChange}
+                onClearFilters={handleClearFilters}
+                customColumns={customColumns}
+                onManageColumns={() => setIsManageColumnsModalOpen(true)}
+                onNewApplication={handleOpenNewModal}
+                onExport={handleExport}
+                isExporting={isExporting}
+              />
             )}
 
-            <ApplicationForm
-              onSubmit={handleCreateApplication}
-              onCancel={handleCloseNewModal}
-              isLoading={isCreating}
+            <FilterChips
+              filters={displayFilters}
+              onRemoveStatus={handleStatusFilterChange}
+              onRemoveCustomColumn={handleCustomColumnFilterChange}
+              onClearDate={() => handleDateRangeChange('all')}
+              onClearAll={handleClearFilters}
+              customColumns={customColumns}
             />
-          </DialogContent>
-        </Dialog>
 
-        {/* Application Detail Sheet */}
-        {selectedApplication && (
-          <ApplicationDetail
-            application={selectedApplication}
-            customColumns={customColumns}
-            onUpdate={handleUpdateApplication}
-            onDelete={handleDeleteApplication}
-            onClose={handleCloseDetail}
-            isOpen={true}
-          />
+            {isFilterEmpty ? (
+              <div className="flex flex-1 items-center justify-center p-8 mt-4">
+                <div className="text-center space-y-4">
+                  <h3 className="text-xl font-medium text-label-primary">
+                    No applications match your filters
+                  </h3>
+                  <p className="text-label-secondary">
+                    Try adjusting your search or active filters.
+                  </p>
+                  <Button onClick={handleClearFilters} variant="outline" className="glass-light">
+                    Clear all filters
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <KanbanBoardV3
+                applications={processedApplications}
+                customColumns={customColumns}
+                onUpdateApplicationColumn={handleUpdateApplicationColumn}
+                onBulkMoveApplications={handleBulkMoveApplications}
+                onApplicationClick={handleApplicationClick}
+                isLoading={false}
+                sortOption={filters.sortOption}
+                selectedIds={selectedIds}
+                onToggleSelect={handleToggleSelect}
+                isMutating={isBulkMutating}
+              />
+            )}
+          </div>
         )}
-
-        {/* Column Manage Modal */}
-        <ColumnManageModal
-          isOpen={isManageColumnsModalOpen}
-          onClose={() => setIsManageColumnsModalOpen(false)}
-          customColumns={customColumns}
-          onCustomColumnsChange={handleCustomColumnsChange}
-        />
       </div>
-    </AnimatedBackground>
+
+      {/* New Application Modal */}
+      <Dialog open={isNewApplicationModalOpen} onOpenChange={handleCloseNewModal}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto w-full max-sm:fixed max-sm:bottom-0 max-sm:top-auto max-sm:left-0 max-sm:translate-x-0 max-sm:translate-y-0 max-sm:rounded-b-none max-sm:rounded-t-2xl max-sm:max-h-[92vh] max-sm:p-5">
+          <DialogHeader>
+            <DialogTitle>Add New Application</DialogTitle>
+            <DialogDescription>
+              Fill in the details of your job application below.
+            </DialogDescription>
+          </DialogHeader>
+
+          {createError && (
+            <div className="rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 p-4 text-sm text-red-800 dark:text-red-200">
+              {createError}
+            </div>
+          )}
+
+          <ApplicationForm
+            onSubmit={handleCreateApplication}
+            onCancel={handleCloseNewModal}
+            isLoading={isCreating}
+          />
+        </DialogContent>
+      </Dialog>
+
+      {/* Application Detail Sheet */}
+      {selectedApplication && (
+        <ApplicationDetail
+          application={selectedApplication}
+          customColumns={customColumns}
+          onUpdate={handleUpdateApplication}
+          onDelete={handleDeleteApplication}
+          onClose={handleCloseDetail}
+          isOpen={true}
+        />
+      )}
+
+      {/* Column Manage Modal */}
+      <ColumnManageModal
+        isOpen={isManageColumnsModalOpen}
+        onClose={() => setIsManageColumnsModalOpen(false)}
+        customColumns={customColumns}
+        onCustomColumnsChange={handleCustomColumnsChange}
+      />
+    </AppShell>
   )
 }
 
@@ -776,15 +763,13 @@ export default function ApplicationsPage() {
   return (
     <React.Suspense
       fallback={
-        <AnimatedBackground variant="minimal">
-          <div className="min-h-screen flex flex-col">
-            <main className="mx-auto w-full flex-1 px-4 py-4 flex flex-col">
-              <div className="flex flex-1 items-center justify-center p-8 glass-ultra rounded-glass shadow-glass-subtle">
-                <p className="text-label-secondary">Loading applications view...</p>
-              </div>
-            </main>
+        <AppShell>
+          <div className="w-full flex-1 px-4 flex flex-col">
+            <div className="flex flex-1 items-center justify-center p-8 glass-ultra rounded-glass shadow-glass-subtle">
+              <p className="text-label-secondary">Loading applications view...</p>
+            </div>
           </div>
-        </AnimatedBackground>
+        </AppShell>
       }
     >
       <ApplicationsPageContent />

@@ -41,6 +41,7 @@ vi.mock('next/navigation', () => ({
   useRouter: vi.fn(() => ({
     push: mockPush,
   })),
+  usePathname: vi.fn(() => '/profile'),
 }))
 
 // Mock the useAvatarColor hook
@@ -66,6 +67,18 @@ vi.mock('@/hooks/useAvatarColor', () => ({
 }))
 
 // Mock the layout components that might use the avatar system
+vi.mock('@/components/layout/AppShell', () => ({
+  AppShell: vi.fn(({ user, children }) => (
+    <div data-testid="app-shell">
+      <div data-testid="navbar">
+        <span data-testid="nav-variant">authenticated</span>
+        {user && <span data-testid="nav-user">{user.email}</span>}
+      </div>
+      {children}
+    </div>
+  )),
+}))
+
 vi.mock('@/components/layout/NavBar', () => ({
   NavBar: vi.fn(({ user, variant }) => (
     <div data-testid="navbar">

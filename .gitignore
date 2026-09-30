@@ -1,28 +1,26 @@
-# CloudPersonal - Container-Level .gitignore
-# Each submodule manages its own development artifacts
+# Dependencies
+/node_modules/
+/.pnp
+.pnp.*
 
-# Environment files (container-level configuration)
+# Testing & Coverage
+/coverage/
+/test-results/
+/playwright-report/
+/.vitest/
+.nyc_output
+
+# Next.js & Production Build
+/.next/
+/out/
+/build
+
+# Environment files (never commit secrets)
 .env
-.env.local
+.env*.local
 .env.production
 .env.staging
-
-# Development tools and AI assistants
-.serena/
-.claude/
-.kilocode/
-.opencode/
-.mcp.json
-repomix-output.xml
-
-# OS generated files
-.DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
-Thumbs.db
+!.env.example
 
 # Logs
 *.log
@@ -30,8 +28,10 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
+pnpm-debug.log*
+logs.txt
 
-# SSL Certificates (sensitive)
+# SSL Certificates & Secrets
 *.pem
 *.key
 *.crt
@@ -42,69 +42,46 @@ yarn-error.log*
 *.backup
 *-backup/
 
-# Terraform (deployment automation)
-*.tfstate
-*.tfstate.*
-.terraform/
-.terraform.lock.hcl
-
-# Ansible (deployment automation)
-*.retry
-
-# Python virtual environment (for tools/)
-.venv/
-venv/
-__pycache__/
-*.py[cod]
-
-# IDE preferences (allow .vscode/ for shared file nesting)
+# IDE & Editor Preferences
 .idea/
 *.sublime-*
 .vimrc.local
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
 
-.playwright-mcp/
+# Operating System Files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
 
-# dependencies
-/node_modules
-/.pnp
-.pnp.*
-
-# testing
-/coverage
-
-# next.js
-/.next/
-/out/
-
-# production
-/build
-
-# semantic-release
-.nyc_output
-
-# package manager
-package-lock.json
-yarn.lock
-
-# vercel
+# Vercel
 .vercel
+/.vercel/
 
-# typescript
+# TypeScript
 *.tsbuildinfo
 next-env.d.ts
 
-# flutter
-.dart_tool
-build
-GoogleService-Info.plist
+# Package Managers
+package-lock.json
+yarn.lock
 
-.serena/cache
-plans/**/*
-!plans/templates/*
-screenshots/*
-docs/screenshots/*
-docs/journals
-logs.txt
-test-ck
-# Supabase local generated state
+# Development Tools & AI Assistant Caches
+.serena/
+.claude/
+.kilocode/
+.opencode/
+.mcp.json
+.playwright-mcp/
+repomix-output.xml
+
+# Supabase Local Generated State
 supabase/.temp/
+
+# Internal Agent Audits & Workflow Reports (keep root clean)
+ANTI_NGANGGUR_*.md

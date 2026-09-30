@@ -57,7 +57,7 @@ Untuk menjamin privasi dan isolasi data antar pengguna secara mutlak, Anti-Ngang
 Stabilitas aplikasi dijaga melalui sistem pengujian berlapis:
 
 - **Unit & Integration Tests**: 40 file test suite dengan 613 tes menggunakan Vitest dan React Testing Library.
-- **Validasi Build Otomatis**: Skrip `./scripts/validate-build.sh` memverifikasi aturan CSP, ketiadaan forbidden code patterns (`@ts-ignore`, `eslint-disable`, inappropriate `any`), serta kompilasi TypeScript ketat.
+- **Validasi Build Otomatis**: Skrip `../scripts/validate-build.sh` memverifikasi aturan CSP, ketiadaan forbidden code patterns (`@ts-ignore`, `eslint-disable`, inappropriate `any`), serta kompilasi TypeScript ketat.
 
 ---
 
