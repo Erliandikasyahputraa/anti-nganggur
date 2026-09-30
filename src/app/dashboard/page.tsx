@@ -17,6 +17,7 @@ const StatusDistributionChart = dynamic(
   { ssr: false }
 )
 import { RecentActivity } from '@/components/dashboard/RecentActivity'
+import { DashboardTasks } from '@/components/dashboard/DashboardTasks'
 import {
   getDashboardStats,
   getActivityCalendarData,
@@ -24,16 +25,21 @@ import {
   getRecentActivity,
 } from '@/lib/utils/dashboard'
 import { Button } from '@/components/ui/button'
-import type { Application } from '@/lib/types/database.types'
+import type { Application, TaskWithApplication } from '@/lib/types/database.types'
 import type { User } from '@supabase/supabase-js'
 import { getApplicationsWorkspaceDataAction } from './actions'
+import { getTasksAction, toggleTaskStatusAction } from '@/app/todos/actions'
 import { useRouter } from 'next/navigation'
+import { toast } from 'sonner'
 
 export default function DashboardPage() {
   const router = useRouter()
   const [applications, setApplications] = React.useState<Application[]>([])
+  const [tasks, setTasks] = React.useState<TaskWithApplication[]>([])
   const [isLoading, setIsLoading] = React.useState(true)
   const [error, setError] = React.useState<string | null>(null)
+  const [taskError, setTaskError] = React.useState<string | null>(null)
+  const [mutatingTaskIds, setMutatingTaskIds] = React.useState<Set<string>>(new Set())
 
   // User state for NavBar
   const [user, setUser] = React.useState<User | null>(null)
@@ -44,19 +50,36 @@ export default function DashboardPage() {
   const distributionData = React.useMemo(() => getStatusDistribution(applications), [applications])
   const recentActivityData = React.useMemo(() => getRecentActivity(applications), [applications])
 
-  // Load user session and applications on mount
+  // Load user session, applications, and pending tasks on mount
   React.useEffect(() => {
     async function loadData() {
       try {
         setIsLoading(true)
         setError(null)
+        setTaskError(null)
 
-        // Load applications and user in a single authenticated server action
-        const data = await getApplicationsWorkspaceDataAction()
-        setUser(data.user)
-        setApplications(data.applications)
+        const [appResult, taskResult] = await Promise.allSettled([
+          getApplicationsWorkspaceDataAction(),
+          getTasksAction({ status: 'pending', limit: 5 }),
+        ])
+
+        if (appResult.status === 'fulfilled') {
+          setUser(appResult.value.user)
+          setApplications(appResult.value.applications)
+        } else {
+          console.error('Failed to load applications:', appResult.reason)
+          setError('Failed to load applications. Please try again.')
+        }
+
+        if (taskResult.status === 'fulfilled') {
+          setTasks(taskResult.value)
+          setTaskError(null)
+        } else {
+          console.error('Failed to load dashboard tasks:', taskResult.reason)
+          setTaskError('Gagal memuat tugas. Silakan coba lagi.')
+        }
       } catch (err) {
-        console.error('Failed to load data:', err)
+        console.error('Failed to load dashboard data:', err)
         setError('Failed to load applications. Please try again.')
       } finally {
         setIsLoading(false)
@@ -65,6 +88,55 @@ export default function DashboardPage() {
 
     loadData()
   }, [])
+
+  // Retry fetching only pending tasks
+  const handleRetryTasks = React.useCallback(async () => {
+    try {
+      setTaskError(null)
+      const pendingTasks = await getTasksAction({ status: 'pending', limit: 5 })
+      setTasks(pendingTasks)
+    } catch (err) {
+      console.error('Failed to retry dashboard tasks:', err)
+      setTaskError('Gagal memuat tugas. Silakan coba lagi.')
+    }
+  }, [])
+
+  // Optimistic completion toggle for pending task
+  const handleToggleTask = React.useCallback(
+    async (task: TaskWithApplication) => {
+      let shouldProceed = false
+      setMutatingTaskIds(prev => {
+        if (prev.has(task.id)) return prev
+        shouldProceed = true
+        const next = new Set(prev)
+        next.add(task.id)
+        return next
+      })
+
+      if (!shouldProceed) return
+
+      const previousTasks = [...tasks]
+      // Optimistically remove from pending list
+      setTasks(prev => prev.filter(t => t.id !== task.id))
+
+      try {
+        await toggleTaskStatusAction(task.id, 'pending')
+        toast.success('Tugas ditandai selesai.')
+      } catch (err) {
+        console.error('Failed to toggle task status:', err)
+        // Rollback exact state
+        setTasks(previousTasks)
+        toast.error(err instanceof Error ? err.message : 'Gagal memperbarui status tugas.')
+      } finally {
+        setMutatingTaskIds(prev => {
+          const next = new Set(prev)
+          next.delete(task.id)
+          return next
+        })
+      }
+    },
+    [tasks]
+  )
 
   if (isLoading) {
     return (
@@ -102,13 +174,23 @@ export default function DashboardPage() {
               </div>
             </div>
 
-            {/* Recent Activity Skeleton */}
-            <div className="bg-[var(--surface-card)] rounded-2xl p-6 shadow-depth-1 border border-[var(--border-default)] space-y-4">
-              <div className="h-5 w-32 bg-muted/60 rounded-md" />
-              <div className="space-y-3">
-                {[1, 2, 3].map(i => (
-                  <div key={i} className="h-12 w-full bg-muted/30 rounded-xl" />
-                ))}
+            {/* Row 3 Skeleton: Tasks + Recent Activity */}
+            <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+              <div className="bg-[var(--surface-card)] rounded-2xl p-6 shadow-depth-1 border border-[var(--border-default)] space-y-4">
+                <div className="h-5 w-36 bg-muted/60 rounded-md" />
+                <div className="space-y-3">
+                  {[1, 2, 3].map(i => (
+                    <div key={i} className="h-12 w-full bg-muted/30 rounded-xl" />
+                  ))}
+                </div>
+              </div>
+              <div className="bg-[var(--surface-card)] rounded-2xl p-6 shadow-depth-1 border border-[var(--border-default)] space-y-4">
+                <div className="h-5 w-32 bg-muted/60 rounded-md" />
+                <div className="space-y-3">
+                  {[1, 2, 3].map(i => (
+                    <div key={i} className="h-12 w-full bg-muted/30 rounded-xl" />
+                  ))}
+                </div>
               </div>
             </div>
           </div>
@@ -294,7 +376,14 @@ export default function DashboardPage() {
                   <StatusDistributionChart data={distributionData} />
                 </div>
               </div>
-              <div className="grid grid-cols-1 gap-6">
+              <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+                <DashboardTasks
+                  tasks={tasks}
+                  onToggleTask={handleToggleTask}
+                  onRetry={handleRetryTasks}
+                  isMutatingTaskIds={mutatingTaskIds}
+                  error={taskError}
+                />
                 <RecentActivity applications={recentActivityData} />
               </div>
             </div>
