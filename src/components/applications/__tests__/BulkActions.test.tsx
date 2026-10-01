@@ -4,7 +4,7 @@ import userEvent from '@testing-library/user-event'
 import { describe, it, expect, beforeEach, vi, Mock } from 'vitest'
 import { ApplicationCard } from '../ApplicationCard'
 import { BulkActionsToolbar } from '../BulkActionsToolbar'
-import ApplicationsPage from '@/app/applications/page'
+import { ApplicationsWorkspace } from '../ApplicationsWorkspace'
 import * as actions from '@/app/dashboard/actions'
 import { toast } from 'sonner'
 import type { Application, CustomColumnDB } from '@/lib/types/database.types'
@@ -277,7 +277,13 @@ describe('Phase 3.4.5 Bulk Actions Component & Integration Tests', () => {
   describe('3. ApplicationsPage Bulk Integration', () => {
     it('shows BulkActionsToolbar when cards are selected and hides standard toolbar', async () => {
       const user = userEvent.setup()
-      render(<ApplicationsPage />)
+      render(
+        <ApplicationsWorkspace
+          user={{ id: 'user-123' } as any}
+          initialApplications={[mockApp1, mockApp2]}
+          initialCustomColumns={mockCustomCols}
+        />
+      )
 
       await waitFor(() => {
         expect(screen.getByText('Frontend Engineer')).toBeInTheDocument()
@@ -304,7 +310,13 @@ describe('Phase 3.4.5 Bulk Actions Component & Integration Tests', () => {
 
     it('Select All toggles all visible applications', async () => {
       const user = userEvent.setup()
-      render(<ApplicationsPage />)
+      render(
+        <ApplicationsWorkspace
+          user={{ id: 'user-123' } as any}
+          initialApplications={[mockApp1, mockApp2]}
+          initialCustomColumns={mockCustomCols}
+        />
+      )
 
       await waitFor(() => {
         expect(screen.getByText('Frontend Engineer')).toBeInTheDocument()
@@ -330,7 +342,13 @@ describe('Phase 3.4.5 Bulk Actions Component & Integration Tests', () => {
       const user = userEvent.setup()
       ;(actions.bulkUpdateApplicationStatusAction as Mock).mockResolvedValue(undefined)
 
-      render(<ApplicationsPage />)
+      render(
+        <ApplicationsWorkspace
+          user={{ id: 'user-123' } as any}
+          initialApplications={[mockApp1, mockApp2]}
+          initialCustomColumns={mockCustomCols}
+        />
+      )
 
       await waitFor(() => {
         expect(screen.getByText('Frontend Engineer')).toBeInTheDocument()
@@ -363,7 +381,13 @@ describe('Phase 3.4.5 Bulk Actions Component & Integration Tests', () => {
       const user = userEvent.setup()
       ;(actions.bulkUpdateApplicationColumnAction as Mock).mockResolvedValue(undefined)
 
-      render(<ApplicationsPage />)
+      render(
+        <ApplicationsWorkspace
+          user={{ id: 'user-123' } as any}
+          initialApplications={[mockApp1, mockApp2]}
+          initialCustomColumns={mockCustomCols}
+        />
+      )
 
       await waitFor(() => {
         expect(screen.getByText('Frontend Engineer')).toBeInTheDocument()
@@ -396,7 +420,13 @@ describe('Phase 3.4.5 Bulk Actions Component & Integration Tests', () => {
       const user = userEvent.setup()
       ;(actions.bulkDeleteApplicationsAction as Mock).mockResolvedValue(undefined)
 
-      render(<ApplicationsPage />)
+      render(
+        <ApplicationsWorkspace
+          user={{ id: 'user-123' } as any}
+          initialApplications={[mockApp1, mockApp2]}
+          initialCustomColumns={mockCustomCols}
+        />
+      )
 
       await waitFor(() => {
         expect(screen.getByText('Frontend Engineer')).toBeInTheDocument()
@@ -429,7 +459,13 @@ describe('Phase 3.4.5 Bulk Actions Component & Integration Tests', () => {
         new Error('Network failure')
       )
 
-      render(<ApplicationsPage />)
+      render(
+        <ApplicationsWorkspace
+          user={{ id: 'user-123' } as any}
+          initialApplications={[mockApp1, mockApp2]}
+          initialCustomColumns={mockCustomCols}
+        />
+      )
 
       await waitFor(() => {
         expect(screen.getByText('Frontend Engineer')).toBeInTheDocument()
@@ -460,7 +496,13 @@ describe('Phase 3.4.5 Bulk Actions Component & Integration Tests', () => {
       // Set search query in URL to "Frontend"
       mockSearchParams = new URLSearchParams('q=Frontend')
 
-      render(<ApplicationsPage />)
+      render(
+        <ApplicationsWorkspace
+          user={{ id: 'user-123' } as any}
+          initialApplications={[mockApp1, mockApp2]}
+          initialCustomColumns={mockCustomCols}
+        />
+      )
 
       await waitFor(() => {
         expect(screen.getByText('Frontend Engineer')).toBeInTheDocument()

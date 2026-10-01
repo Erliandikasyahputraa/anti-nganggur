@@ -1,6 +1,6 @@
 import { render, screen, waitFor } from '@testing-library/react'
 import { describe, it, expect, beforeEach, vi } from 'vitest'
-import ApplicationsPage from '../page'
+import { ApplicationsWorkspace } from '@/components/applications/ApplicationsWorkspace'
 import * as actions from '@/app/dashboard/actions'
 import { FilterState } from '@/lib/utils/filter-utils'
 
@@ -45,7 +45,6 @@ vi.mock('@/app/dashboard/actions', () => ({
 }))
 
 const mockReplace = vi.fn((url: string) => {
-  console.log('MOCK REPLACE CALLED:', url, new Error().stack)
   const queryPart = url.split('?')[1] || ''
   mockSearchParams = new URLSearchParams(queryPart)
 })
@@ -108,12 +107,13 @@ describe('ApplicationsPage URL Sync', () => {
 
   it('1. valid custom ID remains after loading', async () => {
     mockSearchParams.append('custom', 'valid-id-1')
-    render(<ApplicationsPage />)
-
-    // Wait for async load to finish
-    await waitFor(() => {
-      expect(actions.getApplicationsWorkspaceDataAction).toHaveBeenCalled()
-    })
+    render(
+      <ApplicationsWorkspace
+        user={{ id: '1' } as any}
+        initialApplications={mockApps}
+        initialCustomColumns={mockCols}
+      />
+    )
 
     // After load: valid-id-1 should STILL be there, updateUrl should NOT be called
     const toolbar = await screen.findByTestId('toolbar-custom')
@@ -123,7 +123,13 @@ describe('ApplicationsPage URL Sync', () => {
 
   it('2. invalid custom ID is removed', async () => {
     mockSearchParams.append('custom', 'fake-id')
-    render(<ApplicationsPage />)
+    render(
+      <ApplicationsWorkspace
+        user={{ id: '1' } as any}
+        initialApplications={mockApps}
+        initialCustomColumns={mockCols}
+      />
+    )
 
     await waitFor(() => {
       expect(mockReplace).toHaveBeenCalled()
@@ -143,7 +149,13 @@ describe('ApplicationsPage URL Sync', () => {
     mockSearchParams.append('custom', 'valid-id-2')
     mockSearchParams.append('custom', 'fake-id')
 
-    render(<ApplicationsPage />)
+    render(
+      <ApplicationsWorkspace
+        user={{ id: '1' } as any}
+        initialApplications={mockApps}
+        initialCustomColumns={mockCols}
+      />
+    )
 
     await waitFor(() => {
       expect(mockReplace).toHaveBeenCalled()
@@ -161,7 +173,13 @@ describe('ApplicationsPage URL Sync', () => {
   it('4. all invalid IDs result in empty state', async () => {
     mockSearchParams.append('custom', 'fake-1')
     mockSearchParams.append('custom', 'fake-2')
-    render(<ApplicationsPage />)
+    render(
+      <ApplicationsWorkspace
+        user={{ id: '1' } as any}
+        initialApplications={mockApps}
+        initialCustomColumns={mockCols}
+      />
+    )
 
     await waitFor(() => {
       expect(mockReplace).toHaveBeenCalled()
@@ -178,7 +196,13 @@ describe('ApplicationsPage URL Sync', () => {
   it('5. URL cleanup works properly', async () => {
     mockSearchParams.append('status', 'interviewing')
     mockSearchParams.append('custom', 'fake-id')
-    render(<ApplicationsPage />)
+    render(
+      <ApplicationsWorkspace
+        user={{ id: '1' } as any}
+        initialApplications={mockApps}
+        initialCustomColumns={mockCols}
+      />
+    )
 
     await waitFor(() => {
       expect(mockReplace).toHaveBeenCalled()
@@ -193,38 +217,24 @@ describe('ApplicationsPage URL Sync', () => {
   it('6. valid custom URL survives initial loading', async () => {
     mockSearchParams.append('custom', 'valid-id-1')
 
-    // Make the mock take some time to ensure it doesn't instantly resolve
-    let resolvePromise: any
-    vi.mocked(actions.getApplicationsWorkspaceDataAction).mockReturnValue(
-      new Promise(resolve => {
-        resolvePromise = resolve
-      })
+    render(
+      <ApplicationsWorkspace
+        user={{ id: '1' } as any}
+        initialApplications={mockApps}
+        initialCustomColumns={[
+          {
+            id: 'valid-id-1',
+            name: 'Valid 1',
+            order: 0,
+            user_id: '1',
+            description: null,
+            icon: null,
+            created_at: '',
+            updated_at: '',
+          },
+        ]}
+      />
     )
-
-    render(<ApplicationsPage />)
-
-    // It is "loading", so it should NOT strip it out.
-    // Toolbar is not rendered yet, so we just ensure replace wasn't called.
-    expect(screen.queryByTestId('toolbar-custom')).toBeNull()
-    expect(mockReplace).not.toHaveBeenCalled()
-
-    // Resolve the loading
-    resolvePromise({
-      applications: mockApps,
-      customColumns: [
-        {
-          id: 'valid-id-1',
-          name: 'Valid 1',
-          order: 0,
-          user_id: '1',
-          description: null,
-          icon: null,
-          created_at: '',
-          updated_at: '',
-        },
-      ],
-      user: { id: '1' } as any,
-    })
 
     await waitFor(() => {
       expect(screen.getByTestId('toolbar-custom').textContent).toBe('valid-id-1')
@@ -236,26 +246,29 @@ describe('ApplicationsPage URL Sync', () => {
   it('7. custom-column fetch failure preserves URL/state', async () => {
     mockSearchParams.append('custom', 'fake-id')
 
-    // Fail the fetch
-    vi.mocked(actions.getApplicationsWorkspaceDataAction).mockRejectedValue(
-      new Error('Fetch failed')
+    render(
+      <ApplicationsWorkspace
+        user={{ id: '1' } as any}
+        initialApplications={[]}
+        initialCustomColumns={[]}
+        initialError="Fetch failed"
+      />
     )
-
-    render(<ApplicationsPage />)
-
-    await waitFor(() => {
-      expect(actions.getApplicationsWorkspaceDataAction).toHaveBeenCalled()
-    })
 
     // Because it errored, it should NOT aggressively prune fake-id
     // to avoid deleting user state just because of a transient network error.
-    // Note: When there's an error, ApplicationsPageContent shows an error message.
     expect(mockReplace).not.toHaveBeenCalled()
   })
 
   it('8. validation does not continuously rewrite URL/state', async () => {
     mockSearchParams.append('custom', 'fake-id')
-    render(<ApplicationsPage />)
+    render(
+      <ApplicationsWorkspace
+        user={{ id: '1' } as any}
+        initialApplications={mockApps}
+        initialCustomColumns={mockCols}
+      />
+    )
 
     // Wait for at least one replace to happen
     await waitFor(() => {
@@ -271,7 +284,13 @@ describe('ApplicationsPage URL Sync', () => {
   it('9. Phase 3.3 filtering remains unchanged (status parsing)', async () => {
     mockSearchParams.append('status', 'applied')
     mockSearchParams.append('status', 'interviewing')
-    render(<ApplicationsPage />)
+    render(
+      <ApplicationsWorkspace
+        user={{ id: '1' } as any}
+        initialApplications={mockApps}
+        initialCustomColumns={mockCols}
+      />
+    )
 
     const toolbar = await screen.findByTestId('toolbar-status')
     expect(toolbar.textContent).toBe('applied,interviewing')
@@ -279,7 +298,13 @@ describe('ApplicationsPage URL Sync', () => {
 
   it('10. manual sort still permits DnD', async () => {
     mockSearchParams.append('sort', 'manual')
-    render(<ApplicationsPage />)
+    render(
+      <ApplicationsWorkspace
+        user={{ id: '1' } as any}
+        initialApplications={mockApps}
+        initialCustomColumns={mockCols}
+      />
+    )
 
     const toolbar = await screen.findByTestId('toolbar-sort')
     expect(toolbar.textContent).toBe('manual')
@@ -287,7 +312,13 @@ describe('ApplicationsPage URL Sync', () => {
 
   it('11. non-manual sort still disables DnD (via sort option parsed)', async () => {
     mockSearchParams.append('sort', 'newest_applied')
-    render(<ApplicationsPage />)
+    render(
+      <ApplicationsWorkspace
+        user={{ id: '1' } as any}
+        initialApplications={mockApps}
+        initialCustomColumns={mockCols}
+      />
+    )
 
     const toolbar = await screen.findByTestId('toolbar-sort')
     expect(toolbar.textContent).toBe('newest_applied')

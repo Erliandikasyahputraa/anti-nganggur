@@ -1,6 +1,6 @@
 import { render, screen, waitFor, fireEvent } from '@testing-library/react'
 import { describe, it, expect, beforeEach, vi, Mock } from 'vitest'
-import ApplicationsPage from '../page'
+import { ApplicationsWorkspace } from '@/components/applications/ApplicationsWorkspace'
 import * as actions from '@/app/dashboard/actions'
 import { toast } from 'sonner'
 import * as exportUtils from '@/lib/utils/export-utils'
@@ -106,7 +106,13 @@ describe('ApplicationsPage Export', () => {
     ;(exportUtils.generateApplicationsCSV as Mock).mockReturnValue('csv,content')
     ;(exportUtils.generateFilename as Mock).mockReturnValue('file.csv')
 
-    render(<ApplicationsPage />)
+    render(
+      <ApplicationsWorkspace
+        user={{ id: 'user-123' } as any}
+        initialApplications={mockApplications as any}
+        initialCustomColumns={[]}
+      />
+    )
 
     await waitFor(() => {
       expect(screen.getByTestId('mock-toolbar')).toBeInTheDocument()
@@ -123,7 +129,13 @@ describe('ApplicationsPage Export', () => {
   it('handles empty dataset by showing error toast and not downloading', async () => {
     ;(filterApplications as Mock).mockReturnValue([]) // empty after filtering
 
-    render(<ApplicationsPage />)
+    render(
+      <ApplicationsWorkspace
+        user={{ id: 'user-123' } as any}
+        initialApplications={mockApplications as any}
+        initialCustomColumns={[]}
+      />
+    )
 
     await waitFor(() => {
       expect(screen.getByTestId('mock-toolbar')).toBeInTheDocument()
@@ -141,7 +153,13 @@ describe('ApplicationsPage Export', () => {
       throw new Error('Export failed')
     })
 
-    render(<ApplicationsPage />)
+    render(
+      <ApplicationsWorkspace
+        user={{ id: 'user-123' } as any}
+        initialApplications={mockApplications as any}
+        initialCustomColumns={[]}
+      />
+    )
 
     await waitFor(() => {
       expect(screen.getByTestId('mock-toolbar')).toBeInTheDocument()
