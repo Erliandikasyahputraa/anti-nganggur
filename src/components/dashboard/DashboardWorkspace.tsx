@@ -4,16 +4,26 @@ import * as React from 'react'
 import { Plus, Rocket, Lightbulb } from 'lucide-react'
 import { DashboardStats } from '@/components/dashboard/DashboardStats'
 import dynamic from 'next/dynamic'
+import {
+  ActivityCalendarSkeleton,
+  StatusDistributionSkeleton,
+} from '@/components/dashboard/DashboardChartSkeletons'
 
 const ActivityCalendar = dynamic(
   () => import('@/components/dashboard/ActivityCalendar').then(m => m.ActivityCalendar),
-  { ssr: false }
+  {
+    ssr: false,
+    loading: () => <ActivityCalendarSkeleton />,
+  }
 )
 
 const StatusDistributionChart = dynamic(
   () =>
     import('@/components/dashboard/StatusDistributionChart').then(m => m.StatusDistributionChart),
-  { ssr: false }
+  {
+    ssr: false,
+    loading: () => <StatusDistributionSkeleton />,
+  }
 )
 import { RecentActivity } from '@/components/dashboard/RecentActivity'
 import { DashboardTasks } from '@/components/dashboard/DashboardTasks'

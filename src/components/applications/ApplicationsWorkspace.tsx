@@ -2,13 +2,35 @@
 
 import * as React from 'react'
 import { Plus, Rocket, Lightbulb } from 'lucide-react'
+import dynamic from 'next/dynamic'
 import { KanbanBoardV3 } from '@/components/applications/KanbanBoardV3'
-import ApplicationForm from '@/components/applications/ApplicationForm'
-import { ApplicationDetail } from '@/components/applications/ApplicationDetail'
 import { ApplicationsToolbar } from '@/components/applications/ApplicationsToolbar'
 import { BulkActionsToolbar } from '@/components/applications/BulkActionsToolbar'
 import { FilterChips } from '@/components/applications/FilterChips'
-import { ColumnManageModal } from '@/components/applications/ColumnManageModal'
+import { ApplicationDetailModalSkeleton } from '@/components/applications/ApplicationDetailModalSkeleton'
+import { ApplicationFormSkeleton } from '@/components/applications/ApplicationFormSkeleton'
+import { ColumnManageModalSkeleton } from '@/components/applications/ColumnManageModalSkeleton'
+
+const ApplicationForm = dynamic(() => import('@/components/applications/ApplicationForm'), {
+  ssr: false,
+  loading: () => <ApplicationFormSkeleton />,
+})
+
+const ApplicationDetail = dynamic(
+  () => import('@/components/applications/ApplicationDetail').then(mod => mod.ApplicationDetail),
+  {
+    ssr: false,
+    loading: () => <ApplicationDetailModalSkeleton />,
+  }
+)
+
+const ColumnManageModal = dynamic(
+  () => import('@/components/applications/ColumnManageModal').then(mod => mod.ColumnManageModal),
+  {
+    ssr: false,
+    loading: () => <ColumnManageModalSkeleton />,
+  }
+)
 import { Button } from '@/components/ui/button'
 import { toast } from 'sonner'
 import {
@@ -700,11 +722,13 @@ export function ApplicationsWorkspace({
             </div>
           )}
 
-          <ApplicationForm
-            onSubmit={handleCreateApplication}
-            onCancel={handleCloseNewModal}
-            isLoading={isCreating}
-          />
+          {isNewApplicationModalOpen && (
+            <ApplicationForm
+              onSubmit={handleCreateApplication}
+              onCancel={handleCloseNewModal}
+              isLoading={isCreating}
+            />
+          )}
         </DialogContent>
       </Dialog>
 
@@ -721,12 +745,14 @@ export function ApplicationsWorkspace({
       )}
 
       {/* Column Manage Modal */}
-      <ColumnManageModal
-        isOpen={isManageColumnsModalOpen}
-        onClose={() => setIsManageColumnsModalOpen(false)}
-        customColumns={customColumns}
-        onCustomColumnsChange={handleCustomColumnsChange}
-      />
+      {isManageColumnsModalOpen && (
+        <ColumnManageModal
+          isOpen={isManageColumnsModalOpen}
+          onClose={() => setIsManageColumnsModalOpen(false)}
+          customColumns={customColumns}
+          onCustomColumnsChange={handleCustomColumnsChange}
+        />
+      )}
     </div>
   )
 }
