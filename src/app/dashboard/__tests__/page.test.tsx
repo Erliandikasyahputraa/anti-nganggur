@@ -3,9 +3,9 @@ import { render, screen } from '@testing-library/react'
 import DashboardPage from '../page'
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
-import { getApplications } from '@/lib/api/applications'
+import { getDashboardApplications } from '@/lib/api/applications'
 import { getTasks } from '@/lib/api/tasks'
-import type { Application, TaskWithApplication } from '@/lib/types/database.types'
+import type { DashboardApplication, TaskWithApplication } from '@/lib/types/database.types'
 
 vi.mock('@/lib/supabase/server', () => ({
   createClient: vi.fn(),
@@ -24,7 +24,7 @@ vi.mock('next/navigation', () => ({
 }))
 
 vi.mock('@/lib/api/applications', () => ({
-  getApplications: vi.fn(),
+  getDashboardApplications: vi.fn(),
 }))
 
 vi.mock('@/lib/api/tasks', () => ({
@@ -56,7 +56,7 @@ describe('DashboardPage (Server Component)', () => {
 
     await expect(DashboardPage()).rejects.toThrow('REDIRECT:/login')
     expect(redirect).toHaveBeenCalledWith('/login')
-    expect(getApplications).not.toHaveBeenCalled()
+    expect(getDashboardApplications).not.toHaveBeenCalled()
     expect(getTasks).not.toHaveBeenCalled()
   })
 
@@ -72,21 +72,13 @@ describe('DashboardPage (Server Component)', () => {
     }
     vi.mocked(createClient).mockResolvedValue(mockSupabase as any)
 
-    const mockApplications: Application[] = [
+    const mockApplications: DashboardApplication[] = [
       {
         id: '1',
-        user_id: 'user-123',
         company_name: 'Google',
-        company_id: null,
         job_title: 'Software Engineer',
-        job_url: null,
-        location: null,
-        salary_range: null,
         status: 'applied',
         date_applied: '2026-10-01',
-        notes: null,
-        position: 1,
-        custom_column_id: null,
         created_at: '2026-10-01T00:00:00Z',
         updated_at: '2026-10-01T00:00:00Z',
       },
@@ -113,13 +105,13 @@ describe('DashboardPage (Server Component)', () => {
       },
     ]
 
-    vi.mocked(getApplications).mockResolvedValue(mockApplications)
+    vi.mocked(getDashboardApplications).mockResolvedValue(mockApplications)
     vi.mocked(getTasks).mockResolvedValue(mockTasks)
 
     const pageElement = await DashboardPage()
     render(pageElement)
 
-    expect(getApplications).toHaveBeenCalledWith(mockSupabase, 'user-123')
+    expect(getDashboardApplications).toHaveBeenCalledWith(mockSupabase, 'user-123')
     expect(getTasks).toHaveBeenCalledWith(mockSupabase, 'user-123', {
       status: 'pending',
       limit: 5,
@@ -142,7 +134,7 @@ describe('DashboardPage (Server Component)', () => {
     }
     vi.mocked(createClient).mockResolvedValue(mockSupabase as any)
 
-    vi.mocked(getApplications).mockRejectedValue(new Error('Database error'))
+    vi.mocked(getDashboardApplications).mockRejectedValue(new Error('Database error'))
     vi.mocked(getTasks).mockResolvedValue([])
 
     const pageElement = await DashboardPage()

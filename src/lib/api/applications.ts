@@ -5,6 +5,7 @@ import type {
   ApplicationUpdate,
   ApplicationStatus,
   ApplicationStatusHistoryDB,
+  DashboardApplication,
 } from '@/lib/types/database.types'
 import {
   bulkApplicationIdsSchema,
@@ -77,6 +78,48 @@ export async function getApplications(
   } catch (error) {
     if (process.env.NODE_ENV === 'development') {
       console.error('getApplications error:', error)
+    }
+    throw error
+  }
+}
+
+export const DASHBOARD_APPLICATIONS_PROJECTION =
+  'id, company_name, job_title, status, date_applied, created_at, updated_at' as const
+
+export async function getDashboardApplications(
+  supabase: SupabaseClient,
+  userId?: string
+): Promise<DashboardApplication[]> {
+  try {
+    const authenticatedUserId = await verifyAuthenticationContext(supabase, userId)
+
+    const { data, error } = await supabase
+      .from('applications')
+      .select(DASHBOARD_APPLICATIONS_PROJECTION)
+      .eq('user_id', authenticatedUserId)
+      .order('created_at', { ascending: false })
+
+    if (error) {
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Database query error in getDashboardApplications:', error)
+      }
+
+      if (error.message.includes('permission denied')) {
+        throw new Error(
+          `Permission denied accessing applications table. This usually indicates: ` +
+            `1) RLS policies are not properly configured, ` +
+            `2) Environment variables are missing/incorrect, or ` +
+            `3) User session is invalid. Original error: ${error.message}`
+        )
+      }
+
+      throw new Error(`Failed to fetch dashboard applications: ${error.message}`)
+    }
+
+    return (data || []) as unknown as DashboardApplication[]
+  } catch (error) {
+    if (process.env.NODE_ENV === 'development') {
+      console.error('getDashboardApplications error:', error)
     }
     throw error
   }

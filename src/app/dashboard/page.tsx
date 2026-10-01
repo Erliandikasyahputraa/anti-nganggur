@@ -2,10 +2,10 @@ import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { AppShell } from '@/components/layout/AppShell'
 import { DashboardWorkspace } from '@/components/dashboard/DashboardWorkspace'
-import { getApplications } from '@/lib/api/applications'
+import { getDashboardApplications } from '@/lib/api/applications'
 import { getTasks } from '@/lib/api/tasks'
 import { getNormalizedErrorMessage } from '@/lib/utils/error-handler'
-import type { Application, TaskWithApplication } from '@/lib/types/database.types'
+import type { DashboardApplication, TaskWithApplication } from '@/lib/types/database.types'
 
 export default async function DashboardPage() {
   const supabase = await createClient()
@@ -19,13 +19,13 @@ export default async function DashboardPage() {
     redirect('/login')
   }
 
-  let applications: Application[] = []
+  let applications: DashboardApplication[] = []
   let tasks: TaskWithApplication[] = []
   let initialError: string | null = null
   let initialTaskError: string | null = null
 
   const [appResult, taskResult] = await Promise.allSettled([
-    getApplications(supabase, user.id),
+    getDashboardApplications(supabase, user.id),
     getTasks(supabase, user.id, { status: 'pending', limit: 5 }),
   ])
 

@@ -2,10 +2,10 @@
 
 import { formatDistanceToNow, parseISO } from 'date-fns'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import type { Application } from '@/lib/types/database.types'
+import type { DashboardApplication } from '@/lib/types/database.types'
 import { getStatusStyles, getStatusLabel } from '@/lib/utils/status-colors'
 
-export function RecentActivity({ applications }: { applications: Application[] }) {
+export function RecentActivity({ applications }: { applications: DashboardApplication[] }) {
   return (
     <Card className="w-full bg-[var(--surface-card)] border border-[var(--border-default)] shadow-depth-1">
       <CardHeader className="pb-2">

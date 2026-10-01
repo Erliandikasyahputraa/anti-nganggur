@@ -1,4 +1,4 @@
-import { Application } from '@/lib/types/database.types'
+import { DashboardApplication } from '@/lib/types/database.types'
 import { format, parseISO } from 'date-fns'
 import { getStatusCategory, STATUS_STYLES, type StatusCategory } from './status-colors'
 
@@ -9,7 +9,7 @@ export interface DashboardStats {
   offers: number
 }
 
-export function getDashboardStats(applications: Application[]): DashboardStats {
+export function getDashboardStats(applications: DashboardApplication[]): DashboardStats {
   return applications.reduce(
     (acc, app) => {
       acc.total++
@@ -47,7 +47,7 @@ export function getDashboardStats(applications: Application[]): DashboardStats {
   )
 }
 
-export function getActivityCalendarData(applications: Application[]) {
+export function getActivityCalendarData(applications: DashboardApplication[]) {
   const countsByDay: Record<string, number> = {}
   const years = new Set<string>()
 
@@ -90,7 +90,7 @@ export function getActivityCalendarData(applications: Application[]) {
   return { years: sortedYears, dataByYear }
 }
 
-export function getStatusDistribution(applications: Application[]) {
+export function getStatusDistribution(applications: DashboardApplication[]) {
   const statusCounts: Record<string, number> = {}
 
   applications.forEach(app => {
@@ -109,7 +109,7 @@ export function getStatusDistribution(applications: Application[]) {
     .sort((a, b) => b.value - a.value)
 }
 
-export function getRecentActivity(applications: Application[], limit = 5) {
+export function getRecentActivity(applications: DashboardApplication[], limit = 5) {
   return [...applications]
     .sort((a, b) => {
       const dateA = new Date(a.updated_at || a.created_at).getTime()

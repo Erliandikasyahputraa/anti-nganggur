@@ -34,7 +34,7 @@ import {
   getRecentActivity,
 } from '@/lib/utils/dashboard'
 import { Button } from '@/components/ui/button'
-import type { Application, TaskWithApplication } from '@/lib/types/database.types'
+import type { DashboardApplication, TaskWithApplication } from '@/lib/types/database.types'
 import type { User } from '@supabase/supabase-js'
 import { getTasksAction, toggleTaskStatusAction } from '@/app/todos/actions'
 import { useRouter } from 'next/navigation'
@@ -42,7 +42,7 @@ import { toast } from 'sonner'
 
 export interface DashboardWorkspaceProps {
   user: User
-  initialApplications: Application[]
+  initialApplications: DashboardApplication[]
   initialTasks: TaskWithApplication[]
   initialTaskError?: string | null
   initialError?: string | null
@@ -55,7 +55,8 @@ export function DashboardWorkspace({
   initialError = null,
 }: DashboardWorkspaceProps) {
   const router = useRouter()
-  const [applications, setApplications] = React.useState<Application[]>(initialApplications)
+  const [applications, setApplications] =
+    React.useState<DashboardApplication[]>(initialApplications)
   const [tasks, setTasks] = React.useState<TaskWithApplication[]>(initialTasks)
   const [error] = React.useState<string | null>(initialError)
   const [taskError, setTaskError] = React.useState<string | null>(initialTaskError)

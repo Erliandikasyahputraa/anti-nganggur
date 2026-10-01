@@ -36,6 +36,11 @@ export interface Application {
 export type ApplicationInsert = Omit<Application, 'id' | 'created_at' | 'updated_at' | 'user_id'>
 export type ApplicationUpdate = Partial<Omit<Application, 'id' | 'user_id'>>
 
+export type DashboardApplication = Pick<
+  Application,
+  'id' | 'company_name' | 'job_title' | 'status' | 'date_applied' | 'created_at' | 'updated_at'
+>
+
 export interface CompanyDB {
   id: string
   user_id: string
