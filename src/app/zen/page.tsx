@@ -1,17 +1,38 @@
-'use client'
-
-import * as React from 'react'
+import { createClient } from '@/lib/supabase/server'
+import { redirect } from 'next/navigation'
 import { AppShell } from '@/components/layout/AppShell'
+import { ZenWorkspace } from '@/components/zen/ZenWorkspace'
+import { getTasks } from '@/lib/api/tasks'
+import { getNormalizedErrorMessage } from '@/lib/utils/error-handler'
+import type { TaskWithApplication } from '@/lib/types/database.types'
 
-export default function ZenPage() {
+export default async function ZenPage() {
+  const supabase = await createClient()
+
+  const {
+    data: { user },
+    error: authError,
+  } = await supabase.auth.getUser()
+
+  if (authError || !user) {
+    redirect('/login')
+  }
+
+  let initialTasks: TaskWithApplication[] = []
+  let initialError: string | null = null
+
+  try {
+    initialTasks = await getTasks(supabase, user.id, { status: 'pending' })
+  } catch (error) {
+    if (process.env.NODE_ENV === 'development') {
+      console.error('Failed to load initial tasks for Zen Mode:', error)
+    }
+    initialError = getNormalizedErrorMessage(error, 'Gagal memuat data tugas.')
+  }
+
   return (
-    <AppShell>
-      <div className="max-w-4xl mx-auto px-4 py-16 text-center space-y-2">
-        <h1 className="text-2xl font-bold text-label-primary">Zen Mode</h1>
-        <p className="text-sm text-label-secondary">
-          Mode fokus dan persiapan kerja sedang dalam pengembangan.
-        </p>
-      </div>
+    <AppShell user={user}>
+      <ZenWorkspace user={user} initialTasks={initialTasks} initialTaskError={initialError} />
     </AppShell>
   )
 }
