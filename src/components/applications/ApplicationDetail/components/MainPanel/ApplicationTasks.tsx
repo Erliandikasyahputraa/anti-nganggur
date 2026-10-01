@@ -203,7 +203,10 @@ export function ApplicationTasks({
   ]
 
   return (
-    <div className={cn('space-y-6', className)} data-testid="application-tasks-panel">
+    <div
+      className={cn('space-y-6 min-w-0 max-w-full w-full', className)}
+      data-testid="application-tasks-panel"
+    >
       {/* Header bar */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pb-4 border-b border-[var(--modal-divider)]">
         <div>

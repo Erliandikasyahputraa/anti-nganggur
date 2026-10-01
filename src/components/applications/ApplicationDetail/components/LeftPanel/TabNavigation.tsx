@@ -79,7 +79,7 @@ export function TabNavigation({
   if (variant === 'bottom-bar') {
     return (
       <nav
-        className="flex items-center gap-1 p-1 overflow-x-auto scrollbar-none snap-x"
+        className="flex items-center gap-1 p-1 overflow-x-auto scrollbar-none snap-x w-full max-w-full min-w-0"
         role="tablist"
         aria-label="Application detail navigation"
       >

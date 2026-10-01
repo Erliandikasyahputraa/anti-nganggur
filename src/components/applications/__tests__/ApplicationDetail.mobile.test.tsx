@@ -235,4 +235,85 @@ describe('Phase 0 Mobile Remediation — Application Detail UX', () => {
       expect(submitButton).toHaveClass('w-full')
     })
   })
+
+  describe('Mobile Horizontal Overflow Containment — Regression Prevention', () => {
+    it('contains metadata strip with w-full max-w-full min-w-0 so it scrolls locally without expanding parent bounds', () => {
+      const application = createMockApplication()
+      render(
+        <ApplicationDetail
+          application={application}
+          onUpdate={vi.fn().mockResolvedValue(undefined)}
+          onDelete={vi.fn().mockResolvedValue(undefined)}
+          onClose={vi.fn()}
+          isOpen={true}
+        />
+      )
+
+      const metadataStrip = document.querySelector('div.overflow-x-auto.whitespace-nowrap')
+      expect(metadataStrip).toBeInTheDocument()
+      expect(metadataStrip).toHaveClass('w-full')
+      expect(metadataStrip).toHaveClass('max-w-full')
+      expect(metadataStrip).toHaveClass('min-w-0')
+      expect(metadataStrip).toHaveClass('overflow-x-auto')
+    })
+
+    it('contains TabNavigation bottom-bar with w-full max-w-full min-w-0', () => {
+      const { container } = render(
+        <TabNavigation activeTab="overview" onTabChange={vi.fn()} variant="bottom-bar" />
+      )
+
+      const navElement = container.querySelector('nav')
+      expect(navElement).toBeInTheDocument()
+      expect(navElement).toHaveClass('w-full')
+      expect(navElement).toHaveClass('max-w-full')
+      expect(navElement).toHaveClass('min-w-0')
+      expect(navElement).toHaveClass('overflow-x-auto')
+    })
+
+    it('preserves full URL content and wraps long unbroken URLs in Notes with break-word and overflow-wrap', () => {
+      const longUrl =
+        'https://careers.slb.com/job-listing#sortCriteria=%40career_site_posting_date%20descending&f:@country=[Indonesia]&f:@job_family=[Early%20Careers]&f:@brand=[SLB]&f:@business_unit=[Digital%20Technology]&cq=%40source%3D%3D%22Careers%20Prod%22'
+      const application = createMockApplication({
+        notes: `Review this link:\n${longUrl}\nAdditional comment here`,
+      })
+
+      render(
+        <ApplicationDetail
+          application={application}
+          onUpdate={vi.fn().mockResolvedValue(undefined)}
+          onDelete={vi.fn().mockResolvedValue(undefined)}
+          onClose={vi.fn()}
+          isOpen={true}
+        />
+      )
+
+      // Full URL is completely preserved and rendered
+      expect(screen.getByText(new RegExp(longUrl.slice(0, 30)))).toBeInTheDocument()
+      const notesContainer = screen.getByText(new RegExp(longUrl.slice(0, 30)))
+
+      // Must have safe wrapping classes to prevent mobile horizontal blowout
+      expect(notesContainer).toHaveClass('[overflow-wrap:anywhere]')
+      expect(notesContainer).toHaveClass('[word-break:break-word]')
+      expect(notesContainer).toHaveClass('max-w-full')
+      expect(notesContainer).toHaveClass('min-w-0')
+    })
+
+    it('ensures DialogContent modal shell enforces min-w-0 and max-w-full boundaries', () => {
+      const application = createMockApplication()
+      render(
+        <ApplicationDetail
+          application={application}
+          onUpdate={vi.fn().mockResolvedValue(undefined)}
+          onDelete={vi.fn().mockResolvedValue(undefined)}
+          onClose={vi.fn()}
+          isOpen={true}
+        />
+      )
+
+      const dialogContent = document.querySelector('[role="dialog"]')
+      expect(dialogContent).toBeInTheDocument()
+      expect(dialogContent).toHaveClass('min-w-0')
+      expect(dialogContent).toHaveClass('max-sm:max-w-full')
+    })
+  })
 })

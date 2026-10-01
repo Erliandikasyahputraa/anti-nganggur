@@ -47,14 +47,14 @@ export function ApplicationDetailLayout({
       getStatusLabel(application.status)
 
   return (
-    <div className="flex flex-col h-full max-h-[90vh] max-sm:max-h-[92vh] bg-[var(--modal-shell)] text-[var(--text-primary)]">
+    <div className="flex flex-col h-full max-h-[90vh] max-sm:max-h-[92vh] bg-[var(--modal-shell)] text-[var(--text-primary)] w-full max-w-full min-w-0 overflow-hidden">
       {/* Mobile Drag Handle Indicator */}
       <div className="sm:hidden flex justify-center pt-3 pb-1 shrink-0 bg-[var(--modal-header)]">
         <div className="w-12 h-1.5 rounded-full bg-[var(--border-strong)]" />
       </div>
 
       {/* Header */}
-      <div className="bg-[var(--modal-header)] border-b border-[var(--modal-divider)] rounded-t-2xl shrink-0">
+      <div className="bg-[var(--modal-header)] border-b border-[var(--modal-divider)] rounded-t-2xl shrink-0 w-full max-w-full min-w-0">
         {/* Primary Header Info */}
         <div className="flex items-start justify-between gap-2.5 sm:gap-3 p-3 sm:p-6 pb-2.5 sm:pb-3">
           <div className="flex items-center gap-2.5 sm:gap-4 min-w-0">
@@ -84,7 +84,7 @@ export function ApplicationDetailLayout({
         </div>
 
         {/* Metadata Strip: Single-line horizontal scroll on mobile, flex-wrap on desktop */}
-        <div className="flex items-center gap-x-3 sm:gap-x-6 gap-y-1.5 px-3.5 sm:px-6 py-2 sm:py-3 text-xs sm:text-sm text-[var(--text-secondary)] border-t border-[var(--modal-divider)] overflow-x-auto sm:overflow-visible sm:flex-wrap scrollbar-none whitespace-nowrap">
+        <div className="flex items-center gap-x-3 sm:gap-x-6 gap-y-1.5 px-3.5 sm:px-6 py-2 sm:py-3 text-xs sm:text-sm text-[var(--text-secondary)] border-t border-[var(--modal-divider)] overflow-x-auto sm:overflow-visible sm:flex-wrap scrollbar-none whitespace-nowrap w-full max-w-full min-w-0">
           {/* Location */}
           {application.location && (
             <div className="shrink-0 inline-flex items-center gap-1.5">
@@ -155,7 +155,7 @@ export function ApplicationDetailLayout({
       </div>
 
       {/* Desktop 2-Column / Mobile Single-Column Basin */}
-      <div className="flex flex-1 min-h-0 overflow-hidden">
+      <div className="flex flex-1 min-h-0 overflow-hidden w-full max-w-full min-w-0">
         {/* Left Panel - Desktop Navigation (>= 1280px only) */}
         <div className="hidden xl:block w-60 shrink-0 border-r border-[var(--modal-divider)] overflow-y-auto bg-[var(--modal-sidebar)]">
           <TabNavigation
@@ -168,7 +168,7 @@ export function ApplicationDetailLayout({
         </div>
 
         {/* Main Content Basin */}
-        <div className="flex-1 min-w-0 overflow-y-auto bg-[var(--modal-canvas)]">
+        <div className="flex-1 min-w-0 max-w-full overflow-y-auto bg-[var(--modal-canvas)]">
           <MainPanel
             application={application}
             activeTab={activeTab}
@@ -179,7 +179,7 @@ export function ApplicationDetailLayout({
       </div>
 
       {/* Mobile & Tablet Bottom Tab Bar (< 1280px) */}
-      <div className="xl:hidden shrink-0 border-t border-[var(--modal-divider)] bg-[var(--modal-header)] pt-1.5 pb-[max(0.375rem,env(safe-area-inset-bottom))] px-2 shadow-xs">
+      <div className="xl:hidden shrink-0 border-t border-[var(--modal-divider)] bg-[var(--modal-header)] pt-1.5 pb-[max(0.375rem,env(safe-area-inset-bottom))] px-2 shadow-xs w-full max-w-full min-w-0">
         <TabNavigation
           activeTab={activeTab}
           onTabChange={onTabChange}

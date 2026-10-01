@@ -37,7 +37,7 @@ const DialogContent = React.forwardRef<
     <DialogPrimitive.Content
       ref={ref}
       className={cn(
-        'fixed left-[50%] top-[50%] z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-0 border shadow-2xl duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] rounded-2xl bg-[var(--modal-shell)] text-[var(--text-primary)] border-[var(--modal-border)]',
+        'fixed left-[50%] top-[50%] z-50 grid w-full max-w-lg min-w-0 max-w-full translate-x-[-50%] translate-y-[-50%] gap-0 border shadow-2xl duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] rounded-2xl bg-[var(--modal-shell)] text-[var(--text-primary)] border-[var(--modal-border)]',
         'max-sm:fixed max-sm:bottom-0 max-sm:top-auto max-sm:left-0 max-sm:translate-x-0 max-sm:translate-y-0 max-sm:w-full max-sm:max-w-full max-sm:rounded-t-2xl max-sm:rounded-b-none max-sm:max-h-[92vh] max-sm:border-x-0 max-sm:border-b-0',
         className
       )}
@@ -96,7 +96,7 @@ export function ApplicationDetail({
       <Dialog open={isOpen} onOpenChange={onClose}>
         <DialogContent
           className={cn(
-            'w-full overflow-hidden p-0 bg-[var(--modal-shell)] text-[var(--text-primary)] border border-[var(--modal-border)] shadow-2xl rounded-2xl',
+            'w-full min-w-0 max-w-full overflow-hidden p-0 bg-[var(--modal-shell)] text-[var(--text-primary)] border border-[var(--modal-border)] shadow-2xl rounded-2xl',
             isEditMode ? 'max-w-5xl h-auto max-h-[90vh]' : 'max-w-[85vw] h-full max-h-[90vh]',
             'max-sm:max-w-full max-sm:w-full max-sm:h-auto max-sm:max-h-[92vh] max-sm:rounded-t-2xl max-sm:rounded-b-none'
           )}

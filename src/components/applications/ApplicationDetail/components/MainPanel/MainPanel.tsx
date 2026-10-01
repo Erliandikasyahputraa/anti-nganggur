@@ -49,7 +49,7 @@ export function MainPanel({
       id={`${activeTab}-panel`}
       role="tabpanel"
       aria-labelledby={`${activeTab}-tab`}
-      className={cn('p-4 sm:p-6 overflow-y-auto', className)}
+      className={cn('p-4 sm:p-6 overflow-y-auto w-full max-w-full min-w-0', className)}
     >
       {renderContent()}
     </div>
