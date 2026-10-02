@@ -57,7 +57,10 @@ describe('NavBar Component', () => {
     it('should render GitHub link with external attributes', () => {
       renderWithTheme(<NavBar variant="landing" />)
       const githubLink = screen.getByText('GitHub').closest('a')
-      expect(githubLink).toHaveAttribute('href', 'https://github.com/Erliandikasyahputraa/jobhunt')
+      expect(githubLink).toHaveAttribute(
+        'href',
+        'https://github.com/Erliandikasyahputraa/anti-nganggur'
+      )
       expect(githubLink).toHaveAttribute('target', '_blank')
       expect(githubLink).toHaveAttribute('rel', 'noopener noreferrer')
     })

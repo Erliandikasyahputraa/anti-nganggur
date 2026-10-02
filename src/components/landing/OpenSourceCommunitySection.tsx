@@ -72,7 +72,7 @@ export function OpenSourceCommunitySection() {
             {/* CTAs */}
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link
-                href="https://github.com/Erliandikasyahputraa/jobhunt"
+                href="https://github.com/Erliandikasyahputraa/anti-nganggur"
                 className="inline-flex items-center justify-center rounded-xl bg-gray-900 dark:bg-white px-6 py-3 font-semibold text-white dark:text-gray-900 shadow-lg transition-all duration-300 hover:scale-105"
                 target="_blank"
                 rel="noopener noreferrer"
@@ -81,7 +81,7 @@ export function OpenSourceCommunitySection() {
                 View on GitHub
               </Link>
               <Link
-                href="https://github.com/Erliandikasyahputraa/jobhunt/issues/new"
+                href="https://github.com/Erliandikasyahputraa/anti-nganggur/issues/new"
                 className="inline-flex items-center justify-center rounded-xl border-2 border-gray-300 dark:border-gray-600 px-6 py-3 font-semibold text-foreground transition-all duration-300 hover:scale-105 hover:border-purple-600 dark:hover:border-purple-400"
                 target="_blank"
                 rel="noopener noreferrer"

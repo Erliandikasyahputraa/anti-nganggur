@@ -133,8 +133,8 @@ export function GetStartedSection() {
               <div className="glass rounded-xl p-6 overflow-x-auto">
                 <pre className="text-sm text-foreground/90 font-mono">
                   <code>{`# Clone the repository
-git clone https://github.com/Erliandikasyahputraa/jobhunt.git
-cd jobhunt
+git clone https://github.com/Erliandikasyahputraa/anti-nganggur.git
+cd anti-nganggur
 
 # Install dependencies
 bun install
@@ -167,7 +167,7 @@ bun run dev`}</code>
 
               <div className="text-center pt-6">
                 <Link
-                  href="https://github.com/Erliandikasyahputraa/jobhunt"
+                  href="https://github.com/Erliandikasyahputraa/anti-nganggur"
                   className="inline-flex items-center justify-center rounded-xl bg-gray-900 dark:bg-white px-8 py-4 text-lg font-semibold text-white dark:text-gray-900 shadow-xl transition-all duration-300 hover:scale-105"
                   target="_blank"
                   rel="noopener noreferrer"

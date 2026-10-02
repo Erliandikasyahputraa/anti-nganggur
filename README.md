@@ -4,14 +4,14 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue.svg)](https://www.typescriptlang.org/)
 [![Next.js](https://img.shields.io/badge/Next.js-15.x-black.svg)](https://nextjs.org/)
 [![Supabase](https://img.shields.io/badge/Supabase-PostgreSQL%20RLS-green.svg)](https://supabase.com/)
-[![Tests](https://img.shields.io/badge/Tests-613%20passing-brightgreen.svg)](https://github.com/Erliandikasyahputraa/jobhunt)
-[![Quality Gate](https://img.shields.io/badge/Quality%20Gate-100%25%20Passing-success.svg)](https://github.com/Erliandikasyahputraa/jobhunt)
+[![Tests](https://img.shields.io/badge/Tests-613%20passing-brightgreen.svg)](https://github.com/Erliandikasyahputraa/anti-nganggur)
+[![Quality Gate](https://img.shields.io/badge/Quality%20Gate-100%25%20Passing-success.svg)](https://github.com/Erliandikasyahputraa/anti-nganggur)
 
 > **Aplikasi pelacak lamaran kerja modern berbasis Kanban board & Server Actions, dirancang dengan antarmuka Glassmorphism yang elegan, performa cepat, dan keamanan multi-tenant berlapis.**
 
 Mencari pekerjaan bisa menjadi proses yang melelahkan jika lamaran tercecer di berbagai spreadsheet dan email. **Anti-Nganggur** hadir sebagai solusi terstruktur untuk membantu job seeker mengelola, memantau progress, dan menganalisis status setiap lamaran kerja secara rapi dalam satu ruang kerja terpadu.
 
-🌐 **[Live Demo di Vercel](https://anti-nganggur.vercel.app/)** • 📖 **[Dokumentasi Arsitektur](./docs/)** • 🐛 **[Laporkan Isu](https://github.com/Erliandikasyahputraa/jobhunt/issues)** • 💡 **[Request Fitur](https://github.com/Erliandikasyahputraa/jobhunt/issues)**
+🌐 **[Live Demo di Vercel](https://anti-nganggur.vercel.app/)** • 📖 **[Dokumentasi Arsitektur](./docs/)** • 🐛 **[Laporkan Isu](https://github.com/Erliandikasyahputraa/anti-nganggur/issues)** • 💡 **[Request Fitur](https://github.com/Erliandikasyahputraa/anti-nganggur/issues)**
 
 ---
 
@@ -77,8 +77,8 @@ Anti-Nganggur menerapkan prinsip **Defense-in-Depth** untuk isolasi data penggun
 ### 1. Clone Repositori
 
 ```bash
-git clone https://github.com/Erliandikasyahputraa/jobhunt.git
-cd jobhunt
+git clone https://github.com/Erliandikasyahputraa/anti-nganggur.git
+cd anti-nganggur
 ```
 
 ### 2. Instal Dependensi

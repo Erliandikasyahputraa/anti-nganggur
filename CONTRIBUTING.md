@@ -35,8 +35,8 @@ We welcome contributions of all kinds:
 1. **Fork and clone the repository**
 
 ```bash
-git clone https://github.com/Erliandikasyahputraa/jobhunt.git
-cd jobhunt
+git clone https://github.com/Erliandikasyahputraa/anti-nganggur.git
+cd anti-nganggur
 ```
 
 2. **Choose your setup method**

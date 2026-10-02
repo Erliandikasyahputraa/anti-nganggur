@@ -86,7 +86,7 @@ export function LandingContent({ user }: LandingContentProps) {
               </p>
               <div className="flex items-center gap-4">
                 <Link
-                  href="https://github.com/Erliandikasyahputraa/jobhunt"
+                  href="https://github.com/Erliandikasyahputraa/anti-nganggur"
                   className="flex items-center gap-1.5 hover:text-foreground transition-colors"
                   target="_blank"
                   rel="noopener noreferrer"
@@ -97,7 +97,7 @@ export function LandingContent({ user }: LandingContentProps) {
                 </Link>
                 <span>•</span>
                 <Link
-                  href="https://github.com/Erliandikasyahputraa/jobhunt/blob/main/LICENSE"
+                  href="https://github.com/Erliandikasyahputraa/anti-nganggur/blob/main/LICENSE"
                   className="hover:text-foreground transition-colors"
                   target="_blank"
                   rel="noopener noreferrer"

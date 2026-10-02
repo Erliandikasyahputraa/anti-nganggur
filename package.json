@@ -4,7 +4,7 @@
   "description": "Aplikasi pelacak lamaran kerja modern berbasis Kanban board & Next.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Erliandikasyahputraa/jobhunt.git"
+    "url": "https://github.com/Erliandikasyahputraa/anti-nganggur.git"
   },
   "keywords": [
     "anti-nganggur",
@@ -18,7 +18,7 @@
   "author": "Erliandika Syahputra",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/Erliandikasyahputraa/jobhunt/issues"
+    "url": "https://github.com/Erliandikasyahputraa/anti-nganggur/issues"
   },
   "homepage": "https://anti-nganggur.vercel.app",
   "scripts": {

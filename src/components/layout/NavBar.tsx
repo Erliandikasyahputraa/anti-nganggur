@@ -109,7 +109,7 @@ export function NavBar({
               )}
 
               <Link
-                href="https://github.com/Erliandikasyahputraa/jobhunt"
+                href="https://github.com/Erliandikasyahputraa/anti-nganggur"
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="View on GitHub"
