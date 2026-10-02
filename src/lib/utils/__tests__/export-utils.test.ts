@@ -158,7 +158,7 @@ describe('Export Utils', () => {
     })
 
     it('generates filename with correct date format', () => {
-      expect(generateFilename()).toBe('jobhunt-applications-2026-08-25.csv')
+      expect(generateFilename()).toBe('anti-nganggur-applications-2026-08-25.csv')
     })
   })
 })

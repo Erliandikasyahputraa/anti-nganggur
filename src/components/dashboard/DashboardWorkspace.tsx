@@ -186,7 +186,7 @@ export function DashboardWorkspace({
               <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-[var(--text-primary)]">
                 Mulai Perjalanan Cari Kerja Kamu
               </h2>
-              <span className="sr-only">Start Your Job Hunt Journey</span>
+              <span className="sr-only">Mulai Perjalanan Anti-Nganggur</span>
               <p className="text-[var(--text-secondary)] text-sm sm:text-base leading-relaxed">
                 Dashboard analitik kamu sudah siap. Yuk, mulai masukkan daftar lamaran kerja
                 pertamamu!

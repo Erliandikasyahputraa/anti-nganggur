@@ -608,7 +608,7 @@ export function ApplicationsWorkspace({
 
             <div className="space-y-2">
               <h2 className="text-3xl font-semibold text-label-primary">
-                Start Your Job Hunt Journey
+                Mulai Perjalanan Anti-Nganggur
               </h2>
               <p className="text-label-secondary text-lg">
                 Track applications, ace interviews, land your dream job
